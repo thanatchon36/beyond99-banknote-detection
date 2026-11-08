@@ -7,6 +7,7 @@
 <a href="paper/paper.pdf"><img src="https://img.shields.io/badge/paper-PDF-f5a623?style=flat-square&labelColor=0b1020" alt="Paper PDF"></a>
 <a href="https://archive.ics.uci.edu/dataset/267"><img src="https://img.shields.io/badge/data-UCI%20267-b0560f?style=flat-square&labelColor=0b1020" alt="Data: UCI Banknote Authentication"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-ffe8a3?style=flat-square&labelColor=0b1020" alt="License MIT"></a>
+<a href="https://huggingface.co/datasets/thanatchon36/beyond99-banknote-detection"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20dataset-beyond99-f5a623?style=flat-square&labelColor=0b1020" alt="Hugging Face dataset"></a>
 </p>
 
 <p align="center">
@@ -14,6 +15,7 @@
 📄 <b><a href="paper/paper.pdf">Download the PDF</a></b> ·
 📊 <b><a href="code/results/">Results</a></b> ·
 🗂️ <b><a href="https://archive.ics.uci.edu/dataset/267">Data</a></b> ·
+🤗 <b><a href="https://huggingface.co/datasets/thanatchon36/beyond99-banknote-detection">Dataset</a></b> ·
 📝 <b><a href="CITATION.cff">Citation</a></b>
 </p>
 
@@ -65,6 +67,7 @@ Without `uv` or `make`: `pip install -r requirements.txt` and `./reproduce.sh` r
 | `web` | Web reader only → `docs/paper/index.html`, served at <https://thanatchon36.github.io/beyond99-banknote-detection/paper/> |
 | `banner` | README banner → `docs/assets/banner.png` |
 | `arxiv` | arXiv source bundle → `paper/arxiv.tar.gz` |
+| `hf` | Hugging Face dataset bundle → `hf/` (data, family assignments, every result file, card, checksums) |
 
 ## Results at a glance
 
@@ -147,6 +150,8 @@ processes the detector has never seen, and what a central bank should screen wit
 figure is generated from `code/results/`; `tests/test_figures.py` checks that the tables regenerate byte for byte.
 
 - Tables: [`paper/tables/`](paper/tables/) · Figures: [`paper/figures/`](paper/figures/)
+- Dataset on Hugging Face: [`thanatchon36/beyond99-banknote-detection`](https://huggingface.co/datasets/thanatchon36/beyond99-banknote-detection), with the UCI data, the
+  counterfeit family assignments for K = 2..6 and every result file
 - Economic analysis (Section 6): the cost of counterfeiting in a low-incidence economy such as Thailand, and who
   bears it.
 - Research agenda (Section 8): a pre-specified follow-up study on multispectral Thai banknote data.
@@ -174,6 +179,7 @@ docs/
 scripts/
   paper_web.py              paper.tex -> docs/paper/index.html
   make_banner.py            README banner from the data
+  hf_dataset.py             Hugging Face dataset bundle (card: hf_README.md)
 tests/                      data, detectors, README numbers, figures and tables
 Makefile, pyproject.toml    one target per step; dependencies
 reproduce.sh                the same steps without make
@@ -191,8 +197,9 @@ reproduce.sh                the same steps without make
 ## Data
 
 UCI Banknote Authentication (Lohweg, 2013; [doi:10.24432/C55P57](https://doi.org/10.24432/C55P57)): 1,372 specimens
-described by four statistics of a wavelet-transformed image. The dataset is not redistributed here; please cite the
-original source. Label convention: 0 = genuine, 1 = counterfeit.
+described by four statistics of a wavelet-transformed image, released under CC BY 4.0. `make data` downloads it; a copy
+with a header, the counterfeit family assignments and every result file is on
+[Hugging Face](https://huggingface.co/datasets/thanatchon36/beyond99-banknote-detection). Please cite the original source. Label convention: 0 = genuine, 1 = counterfeit.
 
 ## Limitations
 

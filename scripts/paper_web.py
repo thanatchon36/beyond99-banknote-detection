@@ -30,7 +30,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PAPER, CODE, OUT = ROOT / "paper", ROOT / "code", ROOT / "docs" / "paper"
 REPO_URL = "https://github.com/thanatchon36/beyond99-banknote-detection"
 PAPER_URL = "https://thanatchon36.github.io/beyond99-banknote-detection/paper/"
-DATA_URL = "https://doi.org/10.24432/C55P57"  # UCI Banknote Authentication
+DATA_URL = "https://huggingface.co/datasets/thanatchon36/beyond99-banknote-detection"
 
 
 # ------------------------------------------------------------------ results strip
@@ -226,7 +226,7 @@ def build(out_dir: Path = OUT) -> Path:
     actions = (
         '<li><a href="paper.pdf">Download PDF</a></li>'
         f'<li><a href="{REPO_URL}">Code and replication</a></li>'
-        f'<li><a href="{DATA_URL}">Data (UCI)</a></li>'
+        f'<li><a href="{DATA_URL}">Data (Hugging Face)</a></li>'
     )
     title = html.unescape(re.sub(r"<[^>]+>", "", re.search(r"<h1>(.*?)</h1>", page, re.DOTALL).group(1)))
     bib = (

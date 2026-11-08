@@ -23,6 +23,12 @@
       "scheme": "url"
     },
     {
+      "identifier": "https://huggingface.co/datasets/thanatchon36/beyond99-banknote-detection",
+      "relation": "isSupplementedBy",
+      "resource_type": "dataset",
+      "scheme": "url"
+    },
+    {
       "identifier": "10.24432/C55P57",
       "relation": "references",
       "resource_type": "dataset",
