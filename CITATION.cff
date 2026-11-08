@@ -13,6 +13,7 @@ authors:
     given-names: Thanatchon
 version: 0.1.0
 date-released: 2026-11-08
+doi: 10.5281/zenodo.24049790
 license: MIT
 repository-code: "https://github.com/thanatchon36/beyond99-banknote-detection"
 url: "https://thanatchon36.github.io/beyond99-banknote-detection/paper/"

@@ -7,6 +7,7 @@
 <a href="paper/paper.pdf"><img src="https://img.shields.io/badge/paper-PDF-f5a623?style=flat-square&labelColor=0b1020" alt="Paper PDF"></a>
 <a href="https://archive.ics.uci.edu/dataset/267"><img src="https://img.shields.io/badge/data-UCI%20267-b0560f?style=flat-square&labelColor=0b1020" alt="Data: UCI Banknote Authentication"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-ffe8a3?style=flat-square&labelColor=0b1020" alt="License MIT"></a>
+<a href="https://zenodo.org/badge/latestdoi/1450040425"><img src="https://zenodo.org/badge/1450040425.svg" alt="DOI"></a>
 <a href="https://huggingface.co/datasets/thanatchon36/beyond99-banknote-detection"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20dataset-beyond99-f5a623?style=flat-square&labelColor=0b1020" alt="Hugging Face dataset"></a>
 </p>
 
@@ -210,7 +211,7 @@ convolutional or transformer models on multispectral images are part of the prop
 
 ## Citation
 
-See [`CITATION.cff`](CITATION.cff), or:
+See [`CITATION.cff`](CITATION.cff); each release is archived on Zenodo ([doi:10.5281/zenodo.24049790](https://doi.org/10.5281/zenodo.24049790)). Or:
 
 ```bibtex
 @misc{chongmankhong2026beyond,
@@ -219,6 +220,7 @@ See [`CITATION.cff`](CITATION.cff), or:
   author = {Chongmankhong, Thanatchon},
   year   = {2026},
   note   = {Preprint},
+  doi    = {10.5281/zenodo.24049790},
   url    = {https://thanatchon36.github.io/beyond99-banknote-detection/paper/}
 }
 ```
