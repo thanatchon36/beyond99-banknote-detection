@@ -67,6 +67,7 @@ Without `uv` or `make`: `pip install -r requirements.txt` and `./reproduce.sh` r
 | `paper` | Build `paper/paper.pdf` (tectonic) and the web reader `docs/paper/` |
 | `web` | Web reader only → `docs/paper/index.html`, served at <https://thanatchon36.github.io/beyond99-banknote-detection/paper/> |
 | `banner` | README banner → `docs/assets/banner.png` |
+| `poster` | LinkedIn poster → `docs/assets/linkedin_poster.png` |
 | `arxiv` | arXiv source bundle → `paper/arxiv.tar.gz` |
 | `hf` | Hugging Face dataset bundle → `hf/` (data, family assignments, every result file, card, checksums) |
 
@@ -180,6 +181,7 @@ docs/
 scripts/
   paper_web.py              paper.tex -> docs/paper/index.html
   make_banner.py            README banner from the data
+  make_poster.py            LinkedIn poster from the results
   hf_dataset.py             Hugging Face dataset bundle (card: hf_README.md)
 tests/                      data, detectors, README numbers, figures and tables
 Makefile, pyproject.toml    one target per step; dependencies

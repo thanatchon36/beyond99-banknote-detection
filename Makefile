@@ -1,7 +1,7 @@
 PY ?= $(CURDIR)/.venv/bin/python
 K ?= 2 3 4 5 6
 
-.PHONY: setup data experiments lofo quadrant figures models paper web banner arxiv hf test all clean
+.PHONY: setup data experiments lofo quadrant figures models paper web banner poster arxiv hf test all clean
 
 setup:          ## create venv and install the dependencies (needs uv)
 	uv venv .venv --python 3.12
@@ -34,6 +34,9 @@ web:            ## web reader only -> docs/paper/index.html (pandoc; copies the 
 
 banner:         ## README banner -> docs/assets/banner.png
 	$(PY) scripts/make_banner.py
+
+poster:         ## LinkedIn launch poster -> docs/assets/linkedin_poster.png (1440 x 1800)
+	$(PY) scripts/make_poster.py
 
 arxiv:          ## arXiv source bundle -> paper/arxiv.tar.gz
 	cd paper && tar czf arxiv.tar.gz paper.tex paper.bbl references.bib arxiv.sty figures/*.pdf tables/*.tex
