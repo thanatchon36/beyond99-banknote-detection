@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# downloaded data and trained models (re-created by the scripts)
+code/banknote.csv
+code/models/
+
+# LaTeX build files (paper.bbl is kept for arXiv)
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+
+# OS
+.DS_Store
+Thumbs.db

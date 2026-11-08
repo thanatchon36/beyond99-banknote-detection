@@ -1,0 +1,16 @@
+SVM (RBF) & Supervised & Classical & 100.0 & 96.1 [94.8, 97.4] & 88.9 & $-$3.9 & 2.1 & 0.998 \\
+MLP (3$\times$64) & Supervised & Deep & 100.0 & 84.4 [81.7, 87.1] & 67.8 & $-$15.6 & 1.4 & 0.979 \\
+Logistic regression & Supervised & Classical & 98.8 & 76.1 [74.4, 77.6] & 57.9 & $-$22.7 & 1.6 & 0.979 \\
+XGBoost & Supervised & Tree & 99.6 & 61.0 [58.1, 63.7] & 35.7 & $-$38.6 & 1.6 & 0.922 \\
+Random forest & Supervised & Tree & 99.8 & 57.6 [52.7, 61.9] & 38.8 & $-$42.2 & 1.8 & 0.906 \\
+LightGBM & Supervised & Tree & 99.2 & 51.0 [41.1, 60.4] & 29.3 & $-$48.3 & 1.7 & 0.911 \\
+\midrule
+Autoencoder & One-class & Deep & 100.0 & 99.98 [99.9, 100.0] & 99.9 & 0.0 & 1.7 & 0.9998 \\
+Mahalanobis (Gaussian) & One-class & Classical & 98.3 & 98.8 [98.2, 99.3] & 97.3 & +0.5 & 1.6 & 0.999 \\
+One-class SVM & One-class & Classical & 97.1 & 98.3 [96.1, 99.6] & 95.7 & +1.2 & 2.0 & 0.999 \\
+Isolation forest & One-class & Tree & 34.3 & 45.7 [38.3, 53.8] & 4.7 & +11.4 & 2.2 & 0.944 \\
+\midrule
+MLP + Autoencoder & Hybrid & -- & 100.0 & 99.8 [99.6, 99.98] & 99.5 & $-$0.2 & 1.5 & -- \\
+XGBoost + Autoencoder & Hybrid & -- & 100.0 & 99.8 [99.5, 99.97] & 99.3 & $-$0.2 & 1.6 & -- \\
+MLP + Isolation forest & Hybrid & -- & 100.0 & 86.5 [83.7, 89.2] & 65.1 & $-$13.5 & 2.5 & -- \\
+XGBoost + Isolation forest & Hybrid & -- & 99.4 & 67.9 [62.3, 73.5] & 35.6 & $-$31.5 & 2.5 & -- \\

@@ -1,0 +1,457 @@
+\documentclass{article}
+
+\usepackage{arxiv}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{threeparttable}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[font=small,labelfont=bf,skip=4pt]{caption}
+\usepackage[colorlinks=true,linkcolor={blue!55!black},citecolor={blue!55!black},urlcolor={blue!55!black}]{hyperref}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\CDR}{\mathrm{CDR}}
+\newcommand{\GRR}{\mathrm{GRR}}
+\newcommand{\pp}{\,pp}
+\newcommand{\inputrows}[1]{\csname @@input\endcsname #1 }
+\setlist{itemsep=1pt,topsep=2pt,parsep=0pt,partopsep=0pt}
+
+\title{Beyond 99\%: Open-Set Evaluation Reveals Silent Failures of Counterfeit Banknote Detectors, and the Case for One-Class Screening}
+
+\author{Thanatchon Chongmankhong}
+
+\date{November 2026}
+
+\renewcommand{\shorttitle}{Beyond 99\%: Open-Set Evaluation of Counterfeit Banknote Detectors}
+\renewcommand{\headeright}{Preprint}
+\renewcommand{\undertitle}{Preprint}
+
+\hypersetup{
+  pdftitle={Beyond 99\%: Open-Set Evaluation Reveals Silent Failures of Counterfeit Banknote Detectors},
+  pdfauthor={Thanatchon Chongmankhong},
+  pdfkeywords={counterfeit detection, banknote authentication, open-set recognition, one-class classification, central banking}
+}
+
+\begin{document}
+\raggedbottom
+\maketitle
+
+\begin{abstract}
+Machine-learning studies of banknote authentication routinely report 98--100\% accuracy, and the UCI Banknote Authentication benchmark is effectively saturated. These figures come from random train--test splits in which every counterfeit production process (``family'') is represented on both sides of the split. Operationally, however, the costly error is a counterfeit from a family the detector has never seen. We formalise counterfeit detection as an open-set problem and introduce a leave-one-family-out (LOFO) protocol scored at a fixed genuine-rejection budget, reporting both mean and worst-family detection. Applying it to ten supervised classifiers, four one-class detectors and a $2\times2$ grid of hybrids, we find that random-split evaluation is uninformative: every supervised model catches at least 98.8\% of counterfeits, and the best tree ensemble is statistically indistinguishable from a multilayer perceptron (corrected resampled $t$-test, $p=0.24$). Under LOFO at a 1\% genuine-rejection budget, gradient-boosted and random-forest classifiers detect only 51--61\% of unseen-family counterfeits (29--39\% on the hardest family), whereas an autoencoder trained on genuine notes alone detects 99.98\% (95\% CI 99.94--100). Of the counterfeits that XGBoost accepted, 98.9\% lie outside the region holding 99\% of genuine notes: the failure is extrapolation, not class overlap, and it persists for every family granularity from two to six families. A back-of-the-envelope model shows that in a low-incidence economy such as Thailand the macroeconomic cost of counterfeiting is negligible (below 0.01\% of GDP even at Canada's 2004 peak incidence), while losses fall on small cash recipients; the policy objective therefore shifts from marginal accuracy to coverage and novelty detection. We release code that regenerates every number and figure, and we outline a pre-specified study on multispectral Thai banknote data.
+\end{abstract}
+
+\keywords{Counterfeit detection \and Banknote authentication \and Open-set recognition \and One-class classification \and Tree ensembles \and Evaluation methodology \and Central banking}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig1_teaser.pdf}
+  \caption{\textbf{Random splits hide silent failures on unseen counterfeit families.} For each detector, the hollow grey circle is the share of counterfeits detected under the standard random train--test split; the filled circle is the mean share detected when an entire counterfeit family is withheld from training (LOFO, $K=3$ families, 10 seeds; shaded bar: 95\% bootstrap confidence interval), and the diamond is the worst held-out family. All detectors operate at a 1\% genuine-rejection budget calibrated on held-out genuine notes. Right-hand columns: unseen-family detection and its change relative to the random split, in percentage points. Data: UCI Banknote Authentication.}
+  \label{fig:teaser}
+\end{figure}
+
+\section{Introduction}
+\label{sec:intro}
+
+Cash remains a payment instrument of last resort and a store of value, and its usefulness rests on the public's confidence that a banknote is genuine. Central banks therefore monitor counterfeiting closely, usually as the number of counterfeits detected per year per million genuine notes in circulation (parts per million, ppm), and most authentication now happens inside machines: high-speed sorters at central banks and cash centres, recyclers and automated teller machines, and bill validators in vending and gaming equipment. These machines combine optical, infrared, ultraviolet and magnetic sensing \citep{lee2017survey}. Because counterfeiters adapt to whatever is checked, authentication is adversarial and non-stationary: new counterfeit production processes---which we call \emph{families}---appear over time and differ in printing technology, substrate and workshop.
+
+The machine-learning literature reports near-perfect results. On the widely used UCI Banknote Authentication data \citep{lohweg2013banknote,uci_banknote}, accuracies between 98\% and 100\% are common across support vector machines, nearest neighbours, tree ensembles and neural networks, and convolutional networks trained on sensor images from counting machines report similar figures \citep{lee2017survey,pham2020fake}. This invites the question practitioners most often ask: which model is best, and in particular, should one prefer tree ensembles, which tend to dominate on tabular data \citep{grinsztajn2022tree,shwartzziv2022tabular}, or deep networks?
+
+We argue that, under the prevailing evaluation protocol, the question is ill-posed. Random train--test splits place counterfeits from every family on both sides of the split, so they measure \emph{interpolation within known families}. The operationally costly error is different: accepting a counterfeit from a family that was absent from training. An accepted counterfeit can be recirculated to the public through cash dispensers, whereas a rejected genuine note merely costs manual handling. Central-bank testing regimes encode this asymmetry; the European Central Bank's recirculation framework, for instance, requires machines to recognise every counterfeit in reference sets that are updated as new types appear \citep{ecb2010decision}. The relevant evaluation is therefore \emph{open-set} \citep{scheirer2013toward} and should be scored at an operating point that bounds the rejection of genuine notes.
+
+This paper makes that evaluation concrete and measures what it changes. Our contributions are:
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{An open-set protocol for counterfeit detection.} We define leave-one-family-out (LOFO) evaluation at a fixed genuine-rejection budget, with worst-family reporting (Section~\ref{sec:problem}), and show that random splits overstate detection of unseen counterfeits by up to 48 percentage points (Figure~\ref{fig:teaser}).
+\item \textbf{A controlled comparison across five regimes.} Eighteen detectors are compared under random splits, scarce data, weaker features, sensor noise and unseen families, which resolves the tree-versus-deep question into regime-specific answers (Section~\ref{sec:results}).
+\item \textbf{A geometric account of the failure.} We show why supervised detectors extrapolate arbitrarily (Remark~\ref{rem:extrapolation}) and confirm it on the real data: 98.9\% of the counterfeits accepted by XGBoost lie outside the 99\% region of the genuine class (Figure~\ref{fig:mechanism}).
+\item \textbf{An economic framing.} An order-of-magnitude model and a redesign-versus-detection decision rule connect detector design to policy in a low-incidence economy, Thailand (Section~\ref{sec:econ}).
+\item \textbf{Reproducibility and a research agenda.} Code regenerates every table and figure in about ten CPU-minutes, and we pre-specify hypotheses for a study on multispectral Thai banknote data (Section~\ref{sec:agenda}).
+\end{enumerate}
+
+
+
+\section{Background and related work}
+\label{sec:related}
+
+\subsection{Counterfeiting: incidence, measurement and economics}
+
+Table~\ref{tab:incidence} collects indicative incidence levels from issuers' public communications. Three patterns matter for this paper. First, incidence in advanced economies is low, typically tens of ppm or less \citep{ecb_stats,fed_currency}. Second, incidence can rise quickly when a widely used denomination becomes an easy target, as in Canada in the early 2000s, where it peaked near 470\,ppm in 2004 before an integrated strategy of new designs, retailer verification and enforcement brought it down \citep{chant2004counterfeiting,boc_counterfeit}. Third, substrate changes help but do not settle the matter: the United Kingdom saw counterfeiting fall after its polymer series \citep{boe_counterfeit}, whereas Australia, already polymer since the 1990s, still faced a rise in the mid-2010s that motivated a new series \citep{rba_counterfeit}.
+
+\begin{table}[t]
+\centering
+\small
+\begin{threeparttable}
+\caption{Indicative counterfeit incidence and recent design responses (orders of magnitude).}
+\label{tab:incidence}
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+Issuer & Approximate incidence & Context and design response \\
+\midrule
+Euro area (ECB) & $\approx$10--20\,ppm, 2019--2024 & EUR\,20 and EUR\,50 notes most affected; second series introduced 2013--2019 \\
+United States (Federal Reserve) & $<$100\,ppm ($<$0.01\%) & Measurement complicated by large foreign holdings; redesigned \$100 note (2013) \\
+Canada (Bank of Canada) & peak $\approx$470\,ppm (2004) & Integrated strategy; polymer series 2011--2013 \\
+United Kingdom (Bank of England) & declined after polymer & Polymer series 2016--2021 \\
+Australia (RBA) & rise in mid-2010s & Already polymer; Next Generation series 2016--2020 \\
+Thailand (BOT) & low by international standards\tnote{a} & Series 17 (2018); polymer 20-baht note (2022) \\
+\bottomrule
+\end{tabularx}
+\begin{tablenotes}\footnotesize
+\item Figures are indicative orders of magnitude compiled from issuers' public communications \citep{ecb_stats,fed_currency,boc_counterfeit,boe_counterfeit,rba_counterfeit,bot_banknotes}; exact values depend on year and definition. \item[a] We use $\sim$1\,ppm only as an order-of-magnitude working assumption in Section~\ref{sec:econ}, to be replaced by official statistics.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+Economic theory treats counterfeiting as a private claim on seigniorage that is constrained by verification. \citet{nosal2007model} show that the mere threat of counterfeiting can shape monetary equilibria; \citet{quercioli2015economics} model the joint choice of counterfeiting and verification effort across denominations; \citet{fung2011modelling} review this literature, and \citet{judson2003estimating} discuss the measurement problem for a currency held largely abroad. Costs arise through four channels: the face value lost by the last, uncompensated holder; the erosion of confidence, visible when merchants refuse high denominations; the cost of deterrence, including new series, machine upgrades and verification time at the point of sale; and tail risks from organised or state-sponsored counterfeiting. Section~\ref{sec:econ} quantifies the first channel and argues that the others dominate.
+
+\subsection{Machine authentication in the cash cycle}
+
+Security features are commonly grouped into three levels (Table~\ref{tab:levels}). Level-1 features such as watermarks, security threads, colour-shifting inks and intaglio relief are meant for the public; Level-2 features such as infrared patterns, ultraviolet fluorescence and magnetic inks are read by commercial machines; Level-3 features are covert and read only by central-bank sorters, the euro's machine-readable ``M-feature'' being a well-known example. Banknote paper also lacks the optical brighteners of ordinary paper, so it stays dark under ultraviolet light. Major equipment suppliers include Giesecke+Devrient, Toshiba, Glory, Crane Payment Innovations, Kisan Electronics, Julong and GRG Banking for sorters and counters, and JCM and Innovative Technology for bill validators. None publishes its authentication models; disclosed patents mostly describe template matching per denomination combined with decision rules.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Levels of banknote security features and how they are verified.}
+\label{tab:levels}
+\begin{tabularx}{\textwidth}{@{}l l X l@{}}
+\toprule
+Level & Verified by & Typical features & Sensing \\
+\midrule
+1 (public) & People, merchants & Watermark, security thread, colour-shifting ink, intaglio relief, foil & Sight, touch, tilt \\
+2 (machine) & Banks, ATMs, retail devices & Infrared-responsive print, UV fluorescence, magnetic ink and threads & IR/UV/visible imaging, magnetic heads \\
+3 (covert) & Central banks only & Proprietary machine-readable luminescent features & High-speed sorters \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Institutions shape the evaluation standard. Under the ECB's recirculation framework, machine types must correctly classify every counterfeit in test sets held by national central banks, and they must be updated as new counterfeit types appear \citep{ecb2010decision}. Upstream, the Central Bank Counterfeit Deterrence Group promotes a Counterfeit Deterrence System that prevents image-editing software, scanners and printers from processing banknote images. Both mechanisms are, in effect, defences against \emph{novel} threats, which is the setting our protocol formalises.
+
+\subsection{Machine learning for banknote authentication}
+
+The UCI data of \citet{lohweg2013banknote} summarise each specimen by four statistics of a wavelet-transformed image and have become a standard teaching and benchmarking set. Image-based work trains convolutional networks on visible-reflection and infrared-transmission images from the line sensors of counting machines, for denomination recognition, fitness classification and counterfeit detection \citep{lee2017survey,pham2020fake}. Other strands use multispectral imaging to separate inks and substrates, smartphone cameras for assistive or merchant-facing checks (restricted to the visible spectrum), and laboratory spectroscopy to link seized counterfeits to common sources. Across these strands, evaluation is overwhelmingly by random splits of a single pool of counterfeits; held-out counterfeit types are rarely tested.
+
+\subsection{Tree ensembles versus deep networks on tabular data}
+
+Benchmarks find that tree ensembles such as random forests \citep{breiman2001random}, extremely randomised trees \citep{geurts2006extremely}, XGBoost \citep{chen2016xgboost} and LightGBM \citep{ke2017lightgbm} often outperform deep networks on typical tabular data, partly because neural networks are biased towards smooth solutions and are hurt by uninformative features \citep{grinsztajn2022tree,shwartzziv2022tabular}; tabular foundation models now challenge this picture on small data \citep{hollmann2025tabpfn}. The UCI banknote features sit at the other end of that spectrum: four informative features and a smooth, oblique class boundary. In-distribution, theory therefore favours smooth learners. Out of distribution, the relevant property is extrapolation, and here trees are known to predict constants beyond their training range.
+
+\subsection{Open-set recognition, novelty detection and evaluation leakage}
+
+Open-set recognition asks a classifier to reject inputs from classes unseen in training \citep{scheirer2013toward}; for neural networks, a common baseline thresholds the maximum softmax probability \citep{hendrycks2017baseline}, and good closed-set classifiers tend to be good open-set recognisers \citep{vaze2022openset}. Our setting differs in a way that matters: an unseen counterfeit family carries the \emph{same} label as known counterfeits, so the supervised classifier has no reason to be uncertain about it, and it can be confidently assigned to the genuine class. One-class methods instead model only the class that is stable over time, here genuine notes: one-class support vector machines \citep{scholkopf2001estimating}, isolation forests \citep{liu2008isolation} and their extended, non-axis-aligned variant \citep{hariri2021extended}, autoencoders \citep{hinton2006reducing}, deep one-class objectives \citep{ruff2018deep} and patch-level memory banks used in industrial inspection \citep{roth2022towards}; see \citet{pang2021deep} for a review. Finally, grouping-aware evaluation is a recurring remedy for leakage in applied machine learning \citep{kapoor2023leakage}, and leave-one-domain-out testing is standard in domain generalisation \citep{gulrajani2021search}. We bring both ideas to counterfeit detection and add operating-point reporting.
+
+\section{Problem formulation}
+\label{sec:problem}
+
+Let $x\in\mathbb{R}^d$ describe a note and $y\in\{0,1\}$ its class, with $y=1$ for counterfeits. Genuine notes follow a distribution $P_0$; counterfeits arise from families $f\in\mathcal{F}$ with distributions $P_f$. A detector is a score $s:\mathbb{R}^d\to\mathbb{R}$, and a note is flagged when $s(x)>\tau$.
+
+\begin{definition}[Operating point and detection]
+The genuine-rejection rate is $\GRR(\tau)=\Pr_{x\sim P_0}[s(x)>\tau]$. For a budget $\alpha$, the threshold is the empirical $(1-\alpha)$-quantile of scores on held-out genuine validation notes, $\hat\tau_\alpha=\hat Q_{1-\alpha}\big(\{s(x):x\in\mathcal{V}_0\}\big)$. The counterfeit detection rate on family $f$ is $\CDR_f(\tau)=\Pr_{x\sim P_f}[s(x)>\tau]$.
+\end{definition}
+
+Calibrating the threshold on genuine notes only mirrors practice: the rejection of genuine notes drives handling cost and can be measured continuously, whereas the counterfeits that matter are, by assumption, not yet available.
+
+\begin{definition}[LOFO detection and the generalisation gap]
+Let $s^{(-f)}$ be trained on genuine notes and counterfeits from $\mathcal{F}\setminus\{f\}$. The LOFO detection rate and the worst-family rate are
+\begin{equation}
+\CDR_{\mathrm{LOFO}}=\frac{1}{|\mathcal{F}|}\sum_{f\in\mathcal{F}}\CDR_f\!\big(\hat\tau^{(-f)}_\alpha\big),
+\qquad
+W=\min_{f\in\mathcal{F}}\CDR_f\!\big(\hat\tau^{(-f)}_\alpha\big),
+\end{equation}
+and the generalisation gap is $\Delta=\CDR_{\mathrm{LOFO}}-\CDR_{\mathrm{random}}$, where $\CDR_{\mathrm{random}}$ is measured on a random split in which all families appear in training.
+\end{definition}
+
+One-class detectors are trained on genuine notes alone, so for them the held-out family affects only the test set. Algorithm~\ref{alg:lofo} summarises the protocol.
+
+\begin{algorithm}[t]
+\caption{LOFO evaluation at a fixed genuine-rejection budget}
+\label{alg:lofo}
+\small
+\begin{algorithmic}[1]
+\Require genuine notes $\mathcal{G}$; counterfeits with family labels $\{(x_i,f_i)\}$; budget $\alpha$; seeds $1..S$
+\For{seed $=1..S$}
+  \State split $\mathcal{G}$ into train / validation / test (50/20/30\%)
+  \For{each family $f\in\mathcal{F}$}
+    \State train $s^{(-f)}$ on genuine-train $\cup$ counterfeits of $\mathcal{F}\setminus\{f\}$ \Comment{one-class: genuine-train only}
+    \State $\hat\tau\gets$ empirical $(1-\alpha)$-quantile of $s^{(-f)}$ on genuine-validation
+    \State record $\CDR_f=\text{mean}[s^{(-f)}(x)>\hat\tau]$ over family $f$, and $\GRR$ on genuine-test
+  \EndFor
+\EndFor
+\State \Return mean and worst-family $\CDR$ with bootstrap intervals over seeds; realised $\GRR$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{remark}[Extrapolation geometry]
+\label{rem:extrapolation}
+For an ensemble of axis-aligned trees, the split thresholds partition $\mathbb{R}^d$ into finitely many boxes on which $s$ is constant, and the outer boxes are unbounded. Along any ray $x_0+tv$, the score is therefore eventually constant; its limit is set by whichever training notes populated the outermost box, not by distance from the genuine class. A ReLU network is piecewise linear with finitely many linear regions, so its logit is eventually affine in $t$ with a direction-dependent sign. Both kinds of supervised detector can thus assign a remote, unseen family to the genuine class with high confidence. By contrast, a score that is coercive in the distance from the genuine class---for example the Mahalanobis score with a positive-definite covariance \citep{mahalanobis1936generalized}---diverges along every ray, so any sufficiently remote family is flagged at any fixed threshold. Reconstruction-based autoencoders are coercive only in directions that leave their learned manifold, and isolation forests only outside the axis-aligned range of the training data.
+\end{remark}
+
+Remark~\ref{rem:extrapolation} predicts \emph{where} supervised detectors should fail: on families that are far from the genuine class but lie in directions that the known counterfeit families did not cover. Section~\ref{sec:mechanism} tests this prediction.
+
+\section{Experimental design}
+\label{sec:design}
+
+\paragraph{Data.} The UCI Banknote Authentication data contain 1,372 specimens (762 genuine, 610 forged) imaged with an industrial print-inspection camera at about 660\,dpi; each image is reduced to the variance, skewness, kurtosis and entropy of its wavelet transform \citep{lohweg2013banknote,uci_banknote}. We use the convention common in the literature that label 0 denotes genuine notes; the original documentation does not state the mapping. The features differ in how much they separate the classes (univariate AUC 0.927, 0.749, 0.536 and 0.519 respectively).
+
+\paragraph{Counterfeit families.} The data carry no family labels, so we construct proxies by $K$-means clustering of the standardised counterfeit class, choosing $K$ by the silhouette criterion \citep{rousseeuw1987silhouettes} before any detector is evaluated. $K=3$ maximises the silhouette (Figure~\ref{fig:data}c) and yields families of 71, 360 and 179 notes. They differ in substance: family~1 departs from genuine notes mainly, and only moderately, in variance, family~0 also in entropy, and family~2 in skewness and kurtosis (Figure~\ref{fig:data}b). Section~\ref{sec:robust} repeats the analysis for $K=2,\dots,6$.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig2_data.pdf}
+  \caption{\textbf{Data and counterfeit families.} (a) Genuine notes (grey; shaded regions hold 50\%, 90\% and 99\% of the kernel density) and the three counterfeit families in the plane of the two most informative features. (b) Medians and inter-quartile ranges of all four features, standardised against genuine notes. (c) Silhouette of the counterfeit clustering for $K=2,\dots,6$; the main analysis uses the maximiser, $K=3$.}
+  \label{fig:data}
+\end{figure}
+
+\paragraph{Detectors.} Ten supervised classifiers: logistic regression, $k$-nearest neighbours, an RBF support vector machine, six tree-based models (decision tree, random forest, extra trees, histogram gradient boosting, XGBoost, LightGBM) and a multilayer perceptron (MLP) with three hidden layers of 64 ReLU units trained with Adam \citep{kingma2015adam}. Four one-class detectors trained on genuine notes only: isolation forest, one-class SVM, a $4$--$32$--$2$--$32$--$4$ autoencoder scored by reconstruction error, and the Mahalanobis distance from the genuine mean. Four hybrids cross a supervised component (XGBoost or MLP) with a one-class component (isolation forest or autoencoder) and flag a note if either component flags it, each at budget $\alpha/2$ so that the union bound keeps $\GRR\le\alpha$ up to estimation error. All hyperparameters were fixed before evaluation and are listed in Appendix~\ref{app:hyper}; we deliberately avoid tuning so that no result benefits from adaptation to a test set.
+
+\paragraph{Protocols.}
+\textbf{E1} (benchmark): repeated stratified 10-fold cross-validation, five repeats. \textbf{E2} (scarce data): training sets of 10 to 640 notes drawn from a 70\% pool and tested on the remaining 30\%, 30 repetitions. \textbf{E3} (weaker sensors): the same models after removing the strongest feature (variance), then the two strongest, $2\times10$-fold cross-validation. \textbf{E4} (sensor noise): models trained on clean data and tested with additive Gaussian noise of $c\in\{0,0.1,0.25,0.5,0.75,1\}$ training standard deviations, 10 splits $\times$ 5 draws. \textbf{E5} (unseen families): Algorithm~\ref{alg:lofo} with $K=3$, $\alpha=1\%$ and 10 seeds, plus a random 70/30 split of counterfeits with the same genuine partition as reference. \textbf{E6} (robustness): E5 repeated for $K=2,\dots,6$ and $\alpha\in\{0.2,0.5,1,2,5,10,20\}\%$.
+
+\paragraph{Statistical analysis.} Because cross-validation folds overlap, we compare models in E1 with the corrected resampled $t$-test of \citet{nadeau2003inference}, complemented by the Wilcoxon signed-rank test \citep{bouckaert2004evaluating,demsar2006statistical}. For E5 and E6 we report percentile bootstrap intervals \citep{efron1994introduction} over seeds (10,000 resamples) of the seed-level mean across families; for E2 and E4, normal intervals across repetitions. Intervals over seeds capture variation from the genuine partition and model initialisation, not from the construction of families, which E6 addresses separately.
+
+\paragraph{Implementation.} Python 3.12 with scikit-learn 1.9 \citep{pedregosa2011scikit}, XGBoost 3.4 and LightGBM 4.7 on a single CPU core. E1--E5 take about five minutes and E6 about five more; scripts regenerate every table and figure.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{The random-split benchmark is saturated}
+
+Table~\ref{tab:e1} shows that all ten supervised models exceed 98\% accuracy under cross-validation. The RBF-SVM and the MLP classify every note correctly; the best tree model, extra trees, reaches 99.88\%. The difference between extra trees and the MLP ($-0.12$\pp) is not significant (corrected resampled $t$-test $p=0.24$; Wilcoxon $p=0.052$). Every model decides in under 0.1\,ms per note on one CPU core, far below the time budget of sorters that process roughly 30--40 notes per second. On this benchmark, then, model choice is not decided by accuracy, and published accuracies of 99--100\% carry little information about relative merit.
+
+\begin{table}[t]
+\centering
+\small
+\caption{E1: random-split benchmark (repeated stratified 10-fold cross-validation, 5 repeats). Miss rate: counterfeits accepted; GRR: genuine notes rejected (default decision threshold).}
+\label{tab:e1}
+\begin{tabular}{@{}llcccccc@{}}
+\toprule
+Model & Family & Accuracy (\%) & ROC AUC & Miss rate (\%) & GRR (\%) & Fit (ms) & Inference ($\mu$s/note) \\
+\midrule
+\inputrows{tables/e1.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Scarce data, weaker sensors and noise}
+
+The regimes in which model families do differ are summarised in Figure~\ref{fig:regimes} and Table~\ref{tab:e3}. With scarce data, smooth models learn much faster: with 80 training notes the MLP reaches 98.4\% and the SVM 98.5\%, against 92.7--93.6\% for the gradient-boosted and random-forest ensembles; with 10 notes the MLP leads XGBoost by more than 10 points (84.6\% against 74.1\%; LightGBM 63.4\%). This is the reverse of the usual tabular finding and is consistent with its explanation: the UCI boundary is smooth and oblique, which axis-aligned trees can only approximate with many splits.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig3_regimes.pdf}
+  \caption{\textbf{Where model families differ in distribution.} (a) Test accuracy against the number of training notes (30 repetitions; bands: 95\% CI). (b) Accuracy under additive Gaussian noise at test time (10 splits $\times$ 5 draws). Smooth models are more data-efficient; tree ensembles degrade slightly less under heavy noise, but every plotted model loses 11--14 points at $\sigma=0.5$.}
+  \label{fig:regimes}
+\end{figure}
+
+Removing the most informative feature (variance) mimics a cheaper sensor. The MLP again leads (96.8\%), tree ensembles follow closely (95.5--95.9\%), and the untuned SVM drops to 91.1\%; with only kurtosis and entropy, all models converge to 59--72\%, which indicates that performance is limited by information rather than by model class. Under test-time noise the ranking flips: at $\sigma=0.5$ XGBoost (87.8\%) and random forest (87.4\%) edge out the SVM (86.4\%) and MLP (86.0\%), and at $\sigma=1$ XGBoost and random forest lead the MLP and SVM by 2.5--3.3 points. The dominant effect, however, is the loss of 11--14 points for every model, which argues for investing in signal quality before model choice.
+
+\begin{table}[t]
+\centering
+\small
+\caption{E3: accuracy (\%) with weaker feature sets ($2\times10$-fold cross-validation). Best per column in bold.}
+\label{tab:e3}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Model & Family & All four features & Without variance & Kurtosis + entropy only \\
+\midrule
+\inputrows{tables/e3.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Unseen counterfeit families}
+
+The picture changes once a family is withheld (Figure~\ref{fig:teaser}, Table~\ref{tab:lofo}, Figure~\ref{fig:lofo}). Under the random split, every supervised detector catches at least 98.8\% of counterfeits at the 1\% budget. Under LOFO, XGBoost, random forest and LightGBM catch 61.0\%, 57.6\% and 51.0\% on average and only 29--39\% of the hardest family; the MLP catches 84.4\% (worst 67.8\%) and the SVM 96.1\% (worst 88.9\%). The hardest family is family~1, the one closest to genuine notes in Figure~\ref{fig:data}b, which XGBoost detects at 39\% and the MLP at 68\%. One-class detectors are almost unaffected by the change of protocol: the autoencoder detects 99.98\% (95\% CI 99.94--100; worst family 99.9\%), the Mahalanobis score 98.8\% and the one-class SVM 98.3\%, all at a realised genuine-rejection rate of 1.6--2.0\%.
+
+\begin{table}[t]
+\centering
+\small
+\caption{E5: counterfeit detection (\%) at a 1\% genuine-rejection budget ($K=3$ families, 10 seeds). LOFO: mean over held-out families with 95\% bootstrap CI; Worst: seed-averaged minimum over families; $\Delta$: LOFO minus random split (pp); GRR: realised genuine rejection on held-out genuine notes; AUC: ranking quality under LOFO.}
+\label{tab:lofo}
+\begin{tabular}{@{}lllcccccc@{}}
+\toprule
+Detector & Paradigm & Family & Random & LOFO [95\% CI] & Worst & $\Delta$ & GRR (\%) & AUC \\
+\midrule
+\inputrows{tables/lofo.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two further observations matter for deployment. First, the default decision threshold of $0.5$ is worse still: random forest then detects only 23.5\% of unseen-family counterfeits, XGBoost 36.4\% and LightGBM 41.7\%. Second, ranking metrics conceal the problem. Under LOFO the tree ensembles keep an AUC of 0.91--0.92, and the isolation forest an AUC of 0.94, yet at the 1\% budget the latter detects only 45.7\%. Figure~\ref{fig:lofo}b shows why: to detect 89.5\% of unseen-family counterfeits, XGBoost must reject about 22\% of genuine notes, whereas the autoencoder exceeds 99\% while rejecting about 1\%. Reporting detection at a fixed genuine-rejection budget is therefore not a cosmetic choice.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig4_lofo.pdf}
+  \caption{\textbf{Unseen-family detection in detail.} (a) Detection (\%) of each held-out family ($K=3$, 1\% budget, mean over 10 seeds); columns F0--F2 give the held-out family and its number of notes, and ``Worst'' is the seed-averaged minimum over families. (b) Operating characteristics under LOFO: unseen-family detection against the realised genuine-rejection rate for budgets $\alpha$ from 0.2\% to 20\%; open circles mark $\alpha=1\%$.}
+  \label{fig:lofo}
+\end{figure}
+
+\subsection{Why supervised detectors fail: extrapolation, not overlap}
+\label{sec:mechanism}
+
+Remark~\ref{rem:extrapolation} attributes the failure to how supervised scores extrapolate. Figure~\ref{fig:toy} illustrates the mechanism on synthetic data designed for the purpose: two known counterfeit families lie to one side of the genuine class, and two new families appear elsewhere. The supervised detectors flag whatever lies beyond the boundary they drew against the known families, so a new family is caught only by accident of geometry: XGBoost's axis-aligned split happens to cover new family~2 (98\%) but not new family~1 (0\%), and the MLP misses both. The one-class detectors flag departures from the genuine class, each with its own geometry---axis-aligned boxes for the isolation forest and a band around a learned one-dimensional manifold for the autoencoder, which therefore partly misses a family lying along the manifold's extension (72\%).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig5_toy.pdf}
+  \caption{\textbf{Mechanism on synthetic data (illustration only).} Shaded: region flagged at a 1\% genuine-rejection budget. Supervised detectors (a, b) are trained on genuine notes and two known families ($\times$); one-class detectors (c, d) on genuine notes only. The text under each panel gives the share of each new family that is flagged.}
+  \label{fig:toy}
+\end{figure}
+
+The real data confirm the account (Figure~\ref{fig:mechanism}). Pooling all seeds and held-out families, XGBoost accepted 2,582 of 6,100 unseen-family evaluations; 98.9\% of those accepted notes lie outside the region holding 99\% of genuine validation notes under the Mahalanobis score, and 99.9\% exceed the autoencoder's threshold. For the MLP the corresponding figures are 1,366 accepted notes, of which 99.9\% lie outside the genuine region. The missed counterfeits are therefore not ambiguous notes inside the genuine distribution; they are clearly non-genuine notes that a supervised boundary, drawn against other families, places on the genuine side.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig6_mechanism.pdf}
+  \caption{\textbf{Mechanism on the real data} (four features, all seeds, $K=3$). Each point is one note scored by a supervised detector trained without that note's family. Horizontal: squared Mahalanobis distance from the genuine class relative to its 99\% threshold; right of 1 the note lies outside the region holding 99\% of genuine validation notes (``non-genuine''), left of it the note is ``genuine-like''. Vertical: the detector's exact logit minus its 1\% threshold; below 0 the note is accepted as genuine. The shaded quadrant holds counterfeits that are non-genuine yet accepted; the percentage is their share of all unseen-family evaluations.}
+  \label{fig:mechanism}
+\end{figure}
+
+The same lens explains the isolation forest's weakness. Seventy-one per cent of all counterfeits, and 96.9\% of family~1, lie inside the per-feature range of genuine notes; there, axis-parallel isolation cannot separate off-manifold points from the genuine class, a known artefact that motivated non-axis-aligned variants \citep{hariri2021extended}. Accordingly the isolation forest detects only 5\% of family~1.
+
+\subsection{Robustness to family granularity and operating point}
+\label{sec:robust}
+
+Because the families are statistical proxies, we repeat E5 for every $K$ from 2 to 6 (Figure~\ref{fig:k}). Coarser partitions withhold larger and more distinct families and make the task harder for supervised models; finer partitions withhold smaller families that resemble the remaining ones. Throughout, the supervised tree ensembles never exceed 78.1\% mean or 42.9\% worst-family detection. The MLP improves from 60.7\% at $K=2$ to 98.1\% at $K=6$, and the SVM from 85.7\% to 100\%, but their worst-family detection at $K=2$ is 35.5\% and 71.3\%. The autoencoder stays at or above 99.9\% for both mean and worst family at every $K$, and the Mahalanobis score between 94.4\% and 99.0\%. The isolation forest remains the weakest one-class detector (worst family 0.2--11.8\%). Across budgets (Figure~\ref{fig:lofo}b), the autoencoder and the Mahalanobis score dominate the supervised tree ensembles at every $\alpha$ we tested; the isolation forest overtakes the tree ensembles only once more than 5\% of genuine notes are rejected.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig7_k.pdf}
+  \caption{\textbf{Robustness to the granularity of counterfeit families} ($K=2,\dots,6$; 1\% budget; band: 95\% bootstrap CI over seeds). (a) Mean over held-out families. (b) Worst held-out family. Supervised tree ensembles never exceed 78.1\% mean or 42.9\% worst-family detection; the autoencoder stays at or above 99.9\% throughout.}
+  \label{fig:k}
+\end{figure}
+
+\subsection{Hybrids: the one-class component decides novelty detection}
+
+The $2\times2$ hybrid grid isolates the contribution of each component. Replacing the isolation forest by the autoencoder raises unseen-family detection by 31.9 points when paired with XGBoost and by 13.3 points when paired with the MLP; replacing XGBoost by the MLP adds 18.6 points when paired with the isolation forest but only 0.06 points when paired with the autoencoder (Table~\ref{tab:lofo}). Once the one-class component is strong, the choice of supervised component no longer matters for novelty detection. The supervised layer remains useful for a different purpose: it assigns flagged notes to known families, which supports counterfeit intelligence and forensic linkage at no cost in detection.
+
+\section{Economic analysis and policy implications}
+\label{sec:econ}
+
+\subsection{Order of magnitude}
+
+With incidence $\rho$ in ppm, $N$ notes in circulation and a mean counterfeit face value $\bar d$, the annual face value of detected counterfeits is
+\begin{equation}
+V \approx \rho\cdot\frac{N}{10^{6}}\cdot\bar d .
+\label{eq:volume}
+\end{equation}
+For a Thailand-scale economy we use illustrative inputs of $N=6\times10^{9}$ notes and a GDP of THB~18 trillion; these are working assumptions, not official statistics. At $\rho=1$\,ppm and $\bar d=$\,THB~500, Equation~\eqref{eq:volume} gives about 6,000 notes and THB~3 million a year, or $1.7\times10^{-5}\%$ of GDP. Figure~\ref{fig:econ} shows that the conclusion is insensitive to the inputs: even at Canada's 2004 peak incidence, detected counterfeits would amount to about 0.008\% of GDP.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.78\textwidth]{figures/fig8_econ.pdf}
+  \caption{\textbf{Order of magnitude of counterfeiting losses} for a Thailand-scale economy (illustrative inputs: $6\times10^{9}$ notes in circulation, GDP of THB~18 trillion). Colour: annual face value of detected counterfeits as a share of GDP; dashed contours mark decades. The star marks a working assumption of $\sim$1\,ppm and a mean counterfeit value of THB~500.}
+  \label{fig:econ}
+\end{figure}
+
+\subsection{Who bears the cost}
+
+Macroeconomic insignificance does not imply that counterfeiting is harmless. The face value of a counterfeit is lost by its last holder, who is not compensated, and in cash-intensive segments that holder is often a small merchant: for a vendor with daily takings of THB~2,000, a single THB~1,000 counterfeit erases half a day's revenue. The larger social cost runs through confidence. When merchants start refusing a denomination, as happened in Canada during its episode of high incidence, transaction costs rise across the whole cash system, and those who depend most on cash, including older and rural users, bear them disproportionately. These channels suggest judging policy by the cost per counterfeit prevented and by measures of confidence in cash, rather than by losses relative to GDP.
+
+\subsection{Detection versus redesign}
+
+Redesign and detection are complements with very different cost structures. Detection upgrades are cheap and fast, can be deployed within weeks, and work only where machines are; redesigns are expensive and slow---Japan announced its 2024 series five years before issue---but they raise the bar everywhere, including at the point of sale, through new public features. Writing $\Delta L_t$ for the reduction in direct, confidence and verification losses in year $t$ and $r$ for the discount rate, a redesign is worthwhile relative to the best detection alternative when
+\begin{equation}
+\sum_{t=1}^{T}\frac{\Delta L^{\mathrm{direct}}_t+\Delta L^{\mathrm{trust}}_t+\Delta L^{\mathrm{verify}}_t}{(1+r)^{t}} \;>\; C_{\mathrm{redesign}}-C_{\mathrm{detection}} .
+\label{eq:rule}
+\end{equation}
+Canada's experience shows that the left-hand side can be large when incidence and confidence losses are high; Australia's shows that even a polymer substrate eventually needs renewal. At Thailand's low incidence, counterfeiting alone is unlikely to justify accelerating a redesign cycle, which is consistent with redesigns there being driven by series renewal and durability, such as the polymer 20-baht note \citep{bot_banknotes}.
+
+\subsection{Recommendations}
+
+Our results suggest four measures for a low-incidence central bank. \emph{(i) Evaluation standard:} certify detectors with family-held-out tests at a fixed genuine-rejection budget and report worst-family detection, rather than accuracy on random splits. \emph{(ii) Two-layer architecture:} pair a supervised layer, which identifies known families, with a one-class screening layer trained on genuine notes, whose flags feed counterfeit analysis. \emph{(iii) Coverage:} direct resources to points where cash changes hands without machines, through public education on Level-1 features and certified low-cost devices. \emph{(iv) Data-driven redesign triggers:} use detection telemetry, such as ppm by denomination and the emergence of families that pass Level-2 checks, to decide when to accelerate a redesign.
+
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{So, trees or deep networks?} The answer depends on the regime. In distribution on this benchmark, the two are indistinguishable; with scarce data, smooth models (MLP, SVM) learn faster; under heavy noise, tree ensembles degrade slightly less; with weaker features, all models converge. For the threat that matters most, unseen counterfeit families, the decisive choice is the framing---supervised versus one-class---and within one-class detection a neural autoencoder outperforms the tree-based isolation forest by a wide margin. Asking which model family is best, without fixing the regime and the protocol, conflates these effects.
+
+\paragraph{Why one-class screening works here, and when it will not.} Genuine notes come from a single, tightly controlled manufacturing process, whereas counterfeits come from a growing union of processes. Learning the genuine class is therefore well posed, while learning ``the counterfeit class'' is not. This asymmetry has limits. High-quality counterfeits that reproduce intaglio printing and Level-2 features may lie close to the genuine manifold, where any one-class detector must trade detection for genuine rejection; there, covert Level-3 features and redesign remain essential. Reconstruction-based detectors also have blind directions (Figure~\ref{fig:toy}d), which motivates density-based and deep one-class objectives \citep{ruff2018deep} and, for images, patch-level methods \citep{roth2022towards}.
+
+\paragraph{Threats to validity.} \emph{Construct validity:} the UCI specimens are ``banknote-like'' samples from one imaging set-up, described by four features without infrared, ultraviolet or magnetic information, and our families are clusters rather than documented production processes. The robustness analysis over $K$ mitigates, but cannot remove, this concern. If the label mapping were reversed, the one-class results would describe a different experiment. \emph{Internal validity:} hyperparameters are untuned; tuning could change the ranking of the SVM in E3, although it cannot remove the extrapolation property in Remark~\ref{rem:extrapolation}. With about 150 genuine validation notes, realised genuine rejection averaged 1.8\% against a 1\% target. \emph{External validity:} ``deep'' here means small multilayer networks; convolutional and transformer models on raw multispectral images may behave differently, which is a hypothesis of the study proposed below.
+
+\paragraph{Ethics and dual use.} Detailed knowledge of which detectors miss which counterfeits could help counterfeiters. We therefore report results on a public benchmark, describe security features only at the level published by issuers, and recommend that studies on real currencies keep raw data under central-bank control, test adversarial robustness only in simulation, and withhold vendor-specific weaknesses. Producing or possessing counterfeit currency is a serious offence in most jurisdictions, including Thailand; data collection must take place under the supervision of the issuing authority.
+
+\section{A research agenda for Thai banknotes}
+\label{sec:agenda}
+
+We pre-specify a 24-month study with the Bank of Thailand (Figure~\ref{fig:roadmap}). Its data would combine visible, infrared and ultraviolet images and magnetic signals from at least two models of counting machine, genuine notes in a range of conditions, and seized counterfeits labelled by family by document examiners, together with official incidence statistics and a merchant survey. We state five hypotheses:
+\begin{enumerate}[leftmargin=2.2em,label=\textbf{H\arabic*}]
+\item On real Thai banknote data, random-split evaluation overstates unseen-family detection relative to LOFO.
+\item A two-layer detector detects more unseen-family counterfeits than a supervised detector at the same genuine-rejection budget.
+\item On engineered features, gradient boosting performs no worse than deep networks; on raw multispectral images, convolutional or transformer models perform better.
+\item The polymer 20-baht note reduced incidence in its denomination relative to other denominations (difference-in-differences).
+\item At current incidence, the total cost of counterfeiting in Thailand is several times lower than the cost of an accelerated redesign.
+\end{enumerate}
+If access to seized counterfeits is not granted (Gate~A), the study falls back to a one-class track that needs genuine notes only and to an economic track based on published statistics.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig9_roadmap.pdf}
+  \caption{\textbf{Proposed 24-month research plan.} Modelling depends on Gate~A, access to seized counterfeits under central-bank supervision.}
+  \label{fig:roadmap}
+\end{figure}
+
+\section{Conclusion}
+
+Near-perfect accuracy on random splits says little about the ability of a counterfeit detector to catch the counterfeits that matter, those it has never seen. Under a leave-one-family-out protocol at a fixed genuine-rejection budget, supervised tree ensembles that score above 99\% on the standard benchmark detect only about half of unseen-family counterfeits, and the failure follows from how supervised scores extrapolate. A one-class detector trained on genuine notes alone closes the gap. For central banks in low-incidence economies, where counterfeiting is macroeconomically negligible but locally painful, this shifts attention from marginal accuracy to evaluation standards, novelty screening and coverage at the points where cash changes hands without machines. Whether these conclusions survive on multispectral images of real currency is the question our proposed study is designed to answer.
+
+\section*{Data and code availability}
+The UCI Banknote Authentication data are publicly available. The code that regenerates every number, table and figure in this paper accompanies it as supplementary material (\texttt{banknote\_experiments.py}, \texttt{paper\_analysis.py}, \texttt{make\_figures.py}).
+
+\section*{Acknowledgements}
+Experiments and drafting were assisted by an AI system (Claude, Anthropic). The author takes full responsibility for the content.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+
+\section{Hyperparameters}
+\label{app:hyper}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Detector configurations, fixed before evaluation. ``Std.'' denotes feature standardisation fitted on training data.}
+\label{tab:hyper}
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+Detector & Implementation & Configuration \\
+\midrule
+Logistic regression & scikit-learn & L2 penalty, $C=1$; std. \\
+$k$-NN & scikit-learn & $k=5$, Euclidean; std. \\
+SVM (RBF) & scikit-learn & $C=10$, $\gamma=$ scale; decision function as score; std. \\
+Decision tree & scikit-learn & Unpruned \\
+Random forest & scikit-learn & 300 trees \\
+Extra trees & scikit-learn & 300 trees \\
+HistGradientBoosting & scikit-learn & Library defaults \\
+XGBoost & xgboost 3.4 & 300 trees, depth 4, learning rate 0.1, subsample 0.9 \\
+LightGBM & lightgbm 4.7 & 300 trees, learning rate 0.05, 15 leaves, minimum 5 samples per leaf \\
+MLP ($3\times64$) & scikit-learn & ReLU, Adam, L2 $10^{-4}$, up to 1,000 epochs, stop after 20 epochs without improvement of $10^{-5}$; std. \\
+Isolation forest & scikit-learn & 300 trees; score $=-$\,anomaly score \\
+One-class SVM & scikit-learn & $\nu=0.05$, RBF, $\gamma=$ scale; std. \\
+Autoencoder & scikit-learn & 4--32--2--32--4, tanh, Adam, L2 $10^{-4}$, up to 3,000 epochs; score $=$ mean squared reconstruction error; std. \\
+Mahalanobis & scikit-learn & Empirical covariance of genuine training notes; score $=$ squared Mahalanobis distance \\
+Hybrids & -- & Flag if either component exceeds its threshold at budget $\alpha/2$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Synthetic illustration}
+\label{app:toy}
+Figure~\ref{fig:toy} uses 700 genuine points from a bivariate normal distribution with unit variances and correlation 0.78, scaled by 0.55 (450 for training, 250 for threshold calibration), two known families of 160 points each centred at $(2.6,-0.4)$ and $(1.0,-2.4)$, and two new families of 120 points each centred at $(-1.9,2.0)$ and $(-2.9,-2.9)$ with isotropic spread. Models and thresholds follow Appendix~\ref{app:hyper}, except that the two-dimensional autoencoder uses a one-unit bottleneck, since a two-unit code could learn the identity.
+
+\end{document}

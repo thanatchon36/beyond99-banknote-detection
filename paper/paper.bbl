@@ -1,0 +1,268 @@
+\begin{thebibliography}{43}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{Bank of Canada}(2024)]{boc_counterfeit}
+{Bank of Canada}.
+\newblock Counterfeiting statistics and the bank note counterfeit-deterrence
+  strategy.
+\newblock Public information, 2024.
+
+\bibitem[{Bank of England}(2024)]{boe_counterfeit}
+{Bank of England}.
+\newblock Counterfeit banknotes: statistics and polymer series.
+\newblock Public information, 2024.
+
+\bibitem[{Bank of Thailand}(2024)]{bot_banknotes}
+{Bank of Thailand}.
+\newblock Banknote statistics, series 17 banknotes and the polymer 20-baht
+  note.
+\newblock Public information and annual reports, 2024.
+
+\bibitem[{Board of Governors of the Federal Reserve
+  System}(2024)]{fed_currency}
+{Board of Governors of the Federal Reserve System}.
+\newblock {U.S.} currency education program: counterfeit deterrence.
+\newblock Public information, 2024.
+
+\bibitem[Bouckaert and Frank(2004)]{bouckaert2004evaluating}
+Remco~R. Bouckaert and Eibe Frank.
+\newblock Evaluating the replicability of significance tests for comparing
+  learning algorithms.
+\newblock In \emph{Advances in Knowledge Discovery and Data Mining (PAKDD)},
+  pages 3--12, 2004.
+
+\bibitem[Breiman(2001)]{breiman2001random}
+Leo Breiman.
+\newblock Random forests.
+\newblock \emph{Machine Learning}, 45\penalty0 (1):\penalty0 5--32, 2001.
+
+\bibitem[Chant(2004)]{chant2004counterfeiting}
+John Chant.
+\newblock Counterfeiting: A {C}anadian perspective.
+\newblock Working Paper 2004-33, Bank of Canada, 2004.
+
+\bibitem[Chen and Guestrin(2016)]{chen2016xgboost}
+Tianqi Chen and Carlos Guestrin.
+\newblock {XGBoost}: A scalable tree boosting system.
+\newblock In \emph{Proceedings of the 22nd ACM SIGKDD International Conference
+  on Knowledge Discovery and Data Mining}, pages 785--794, 2016.
+
+\bibitem[Dem{\v{s}}ar(2006)]{demsar2006statistical}
+Janez Dem{\v{s}}ar.
+\newblock Statistical comparisons of classifiers over multiple data sets.
+\newblock \emph{Journal of Machine Learning Research}, 7:\penalty0 1--30, 2006.
+
+\bibitem[Efron and Tibshirani(1994)]{efron1994introduction}
+Bradley Efron and Robert~J. Tibshirani.
+\newblock \emph{An Introduction to the Bootstrap}.
+\newblock Chapman \& Hall/CRC, 1994.
+
+\bibitem[{European Central Bank}(2010)]{ecb2010decision}
+{European Central Bank}.
+\newblock Decision {ECB/2010/14} of 16 september 2010 on the authenticity and
+  fitness checking and recirculation of euro banknotes.
+\newblock Official Journal of the European Union, L 267, 2010.
+
+\bibitem[{European Central Bank}(2019--2025)]{ecb_stats}
+{European Central Bank}.
+\newblock Biannual information on euro banknote counterfeiting.
+\newblock Press release series, 2019--2025.
+
+\bibitem[Fung and Shao(2011)]{fung2011modelling}
+Ben S.~C. Fung and Enchuan Shao.
+\newblock Modelling the counterfeiting of bank notes: A literature review.
+\newblock \emph{Bank of Canada Review}, Autumn:\penalty0 29--35, 2011.
+
+\bibitem[Geurts et~al.(2006)Geurts, Ernst, and Wehenkel]{geurts2006extremely}
+Pierre Geurts, Damien Ernst, and Louis Wehenkel.
+\newblock Extremely randomized trees.
+\newblock \emph{Machine Learning}, 63\penalty0 (1):\penalty0 3--42, 2006.
+
+\bibitem[Grinsztajn et~al.(2022)Grinsztajn, Oyallon, and
+  Varoquaux]{grinsztajn2022tree}
+L{\'e}o Grinsztajn, Edouard Oyallon, and Ga{\"e}l Varoquaux.
+\newblock Why do tree-based models still outperform deep learning on typical
+  tabular data?
+\newblock In \emph{Advances in Neural Information Processing Systems 35,
+  Datasets and Benchmarks Track}, 2022.
+
+\bibitem[Gulrajani and Lopez-Paz(2021)]{gulrajani2021search}
+Ishaan Gulrajani and David Lopez-Paz.
+\newblock In search of lost domain generalization.
+\newblock In \emph{International Conference on Learning Representations}, 2021.
+
+\bibitem[Hariri et~al.(2021)Hariri, Carrasco~Kind, and
+  Brunner]{hariri2021extended}
+Sahand Hariri, Matias Carrasco~Kind, and Robert~J. Brunner.
+\newblock Extended isolation forest.
+\newblock \emph{IEEE Transactions on Knowledge and Data Engineering},
+  33\penalty0 (4):\penalty0 1479--1489, 2021.
+
+\bibitem[Hendrycks and Gimpel(2017)]{hendrycks2017baseline}
+Dan Hendrycks and Kevin Gimpel.
+\newblock A baseline for detecting misclassified and out-of-distribution
+  examples in neural networks.
+\newblock In \emph{International Conference on Learning Representations}, 2017.
+
+\bibitem[Hinton and Salakhutdinov(2006)]{hinton2006reducing}
+Geoffrey~E. Hinton and Ruslan~R. Salakhutdinov.
+\newblock Reducing the dimensionality of data with neural networks.
+\newblock \emph{Science}, 313\penalty0 (5786):\penalty0 504--507, 2006.
+
+\bibitem[Hollmann et~al.(2025)Hollmann, M{\"u}ller, Purucker, Krishnakumar,
+  K{\"o}rfer, Hoo, Schirrmeister, and Hutter]{hollmann2025tabpfn}
+Noah Hollmann, Samuel M{\"u}ller, Lennart Purucker, Arjun Krishnakumar, Max
+  K{\"o}rfer, Shi~Bin Hoo, Robin~Tibor Schirrmeister, and Frank Hutter.
+\newblock Accurate predictions on small data with a tabular foundation model.
+\newblock \emph{Nature}, 637:\penalty0 319--326, 2025.
+
+\bibitem[Judson and Porter(2003)]{judson2003estimating}
+Ruth~A. Judson and Richard~D. Porter.
+\newblock Estimating the worldwide volume of counterfeit {U.S.} currency: Data
+  and extrapolation.
+\newblock Finance and Economics Discussion Series 2003-52, Board of Governors
+  of the Federal Reserve System, 2003.
+
+\bibitem[Kapoor and Narayanan(2023)]{kapoor2023leakage}
+Sayash Kapoor and Arvind Narayanan.
+\newblock Leakage and the reproducibility crisis in machine-learning-based
+  science.
+\newblock \emph{Patterns}, 4\penalty0 (9):\penalty0 100804, 2023.
+
+\bibitem[Ke et~al.(2017)Ke, Meng, Finley, Wang, Chen, Ma, Ye, and
+  Liu]{ke2017lightgbm}
+Guolin Ke, Qi~Meng, Thomas Finley, Taifeng Wang, Wei Chen, Weidong Ma, Qiwei
+  Ye, and Tie-Yan Liu.
+\newblock {LightGBM}: A highly efficient gradient boosting decision tree.
+\newblock In \emph{Advances in Neural Information Processing Systems 30}, 2017.
+
+\bibitem[Kingma and Ba(2015)]{kingma2015adam}
+Diederik~P. Kingma and Jimmy Ba.
+\newblock Adam: A method for stochastic optimization.
+\newblock In \emph{International Conference on Learning Representations}, 2015.
+
+\bibitem[Lee et~al.(2017)Lee, Hong, Kim, and Park]{lee2017survey}
+Ji~Woo Lee, Hyung~Gil Hong, Ki~Wan Kim, and Kang~Ryoung Park.
+\newblock A survey on banknote recognition methods by various sensors.
+\newblock \emph{Sensors}, 17\penalty0 (2):\penalty0 313, 2017.
+
+\bibitem[Liu et~al.(2008)Liu, Ting, and Zhou]{liu2008isolation}
+Fei~Tony Liu, Kai~Ming Ting, and Zhi-Hua Zhou.
+\newblock Isolation forest.
+\newblock In \emph{Proceedings of the 8th IEEE International Conference on Data
+  Mining}, pages 413--422, 2008.
+
+\bibitem[Lohweg(2013)]{uci_banknote}
+Volker Lohweg.
+\newblock Banknote authentication.
+\newblock UCI Machine Learning Repository, 2013.
+
+\bibitem[Lohweg et~al.(2013)Lohweg, Hoffmann, D{\"o}rksen, Hildebrand, Gillich,
+  Hofmann, and Schaede]{lohweg2013banknote}
+Volker Lohweg, Jan~Leif Hoffmann, Helene D{\"o}rksen, Roland Hildebrand, Eugen
+  Gillich, J{\"u}rg Hofmann, and Johannes Schaede.
+\newblock Banknote authentication with mobile devices.
+\newblock In \emph{Media Watermarking, Security, and Forensics 2013}, volume
+  8665 of \emph{Proceedings of SPIE}, 2013.
+
+\bibitem[Mahalanobis(1936)]{mahalanobis1936generalized}
+Prasanta~Chandra Mahalanobis.
+\newblock On the generalized distance in statistics.
+\newblock \emph{Proceedings of the National Institute of Sciences of India},
+  2\penalty0 (1):\penalty0 49--55, 1936.
+
+\bibitem[Nadeau and Bengio(2003)]{nadeau2003inference}
+Claude Nadeau and Yoshua Bengio.
+\newblock Inference for the generalization error.
+\newblock \emph{Machine Learning}, 52\penalty0 (3):\penalty0 239--281, 2003.
+
+\bibitem[Nosal and Wallace(2007)]{nosal2007model}
+Ed~Nosal and Neil Wallace.
+\newblock A model of (the threat of) counterfeiting.
+\newblock \emph{Journal of Monetary Economics}, 54\penalty0 (4):\penalty0
+  994--1001, 2007.
+
+\bibitem[Pang et~al.(2021)Pang, Shen, Cao, and van~den Hengel]{pang2021deep}
+Guansong Pang, Chunhua Shen, Longbing Cao, and Anton van~den Hengel.
+\newblock Deep learning for anomaly detection: A review.
+\newblock \emph{ACM Computing Surveys}, 54\penalty0 (2):\penalty0 1--38, 2021.
+
+\bibitem[Pedregosa et~al.(2011)]{pedregosa2011scikit}
+Fabian Pedregosa et~al.
+\newblock Scikit-learn: Machine learning in {P}ython.
+\newblock \emph{Journal of Machine Learning Research}, 12:\penalty0 2825--2830,
+  2011.
+
+\bibitem[Pham et~al.(2020)Pham, Park, Nguyen, Batchuluun, and
+  Park]{pham2020fake}
+Tuyen~Danh Pham, Chanhum Park, Dat~Tien Nguyen, Ganbayar Batchuluun, and
+  Kang~Ryoung Park.
+\newblock Deep learning-based fake-banknote detection for the visually impaired
+  people using visible-light images captured by smartphone cameras.
+\newblock \emph{IEEE Access}, 8, 2020.
+
+\bibitem[Quercioli and Smith(2015)]{quercioli2015economics}
+Elena Quercioli and Lones Smith.
+\newblock The economics of counterfeiting.
+\newblock \emph{Econometrica}, 83\penalty0 (3):\penalty0 1211--1236, 2015.
+
+\bibitem[{Reserve Bank of Australia}(2020)]{rba_counterfeit}
+{Reserve Bank of Australia}.
+\newblock Banknote counterfeiting in {A}ustralia and the next generation
+  banknote program.
+\newblock Bulletin articles and public information, 2020.
+
+\bibitem[Roth et~al.(2022)Roth, Pemula, Zepeda, Sch{\"o}lkopf, Brox, and
+  Gehler]{roth2022towards}
+Karsten Roth, Latha Pemula, Joaquin Zepeda, Bernhard Sch{\"o}lkopf, Thomas
+  Brox, and Peter Gehler.
+\newblock Towards total recall in industrial anomaly detection.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition}, pages 14318--14328, 2022.
+
+\bibitem[Rousseeuw(1987)]{rousseeuw1987silhouettes}
+Peter~J. Rousseeuw.
+\newblock Silhouettes: A graphical aid to the interpretation and validation of
+  cluster analysis.
+\newblock \emph{Journal of Computational and Applied Mathematics}, 20:\penalty0
+  53--65, 1987.
+
+\bibitem[Ruff et~al.(2018)Ruff, Vandermeulen, Goernitz, Deecke, Siddiqui,
+  Binder, M{\"u}ller, and Kloft]{ruff2018deep}
+Lukas Ruff, Robert Vandermeulen, Nico Goernitz, Lucas Deecke, Shoaib~Ahmed
+  Siddiqui, Alexander Binder, Emmanuel M{\"u}ller, and Marius Kloft.
+\newblock Deep one-class classification.
+\newblock In \emph{Proceedings of the 35th International Conference on Machine
+  Learning}, pages 4393--4402, 2018.
+
+\bibitem[Scheirer et~al.(2013)Scheirer, de~Rezende~Rocha, Sapkota, and
+  Boult]{scheirer2013toward}
+Walter~J. Scheirer, Anderson de~Rezende~Rocha, Archana Sapkota, and Terrance~E.
+  Boult.
+\newblock Toward open set recognition.
+\newblock \emph{IEEE Transactions on Pattern Analysis and Machine
+  Intelligence}, 35\penalty0 (7):\penalty0 1757--1772, 2013.
+
+\bibitem[Sch{\"o}lkopf et~al.(2001)Sch{\"o}lkopf, Platt, Shawe-Taylor, Smola,
+  and Williamson]{scholkopf2001estimating}
+Bernhard Sch{\"o}lkopf, John~C. Platt, John Shawe-Taylor, Alex~J. Smola, and
+  Robert~C. Williamson.
+\newblock Estimating the support of a high-dimensional distribution.
+\newblock \emph{Neural Computation}, 13\penalty0 (7):\penalty0 1443--1471,
+  2001.
+
+\bibitem[Shwartz-Ziv and Armon(2022)]{shwartzziv2022tabular}
+Ravid Shwartz-Ziv and Amitai Armon.
+\newblock Tabular data: Deep learning is not all you need.
+\newblock \emph{Information Fusion}, 81:\penalty0 84--90, 2022.
+
+\bibitem[Vaze et~al.(2022)Vaze, Han, Vedaldi, and Zisserman]{vaze2022openset}
+Sagar Vaze, Kai Han, Andrea Vedaldi, and Andrew Zisserman.
+\newblock Open-set recognition: A good closed-set classifier is all you need.
+\newblock In \emph{International Conference on Learning Representations}, 2022.
+
+\end{thebibliography}

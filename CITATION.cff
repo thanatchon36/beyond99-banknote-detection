@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this code or these results, please cite the preprint below."
+title: "Beyond 99%: Open-Set Evaluation of Counterfeit Banknote Detectors"
+authors:
+  - family-names: "Chongmankhong"
+    given-names: "Thanatchon"
+version: "0.1.0"
+date-released: "2026-11-08"
+license: MIT
+type: software
+keywords:
+  - counterfeit detection
+  - banknote authentication
+  - open-set recognition
+  - one-class classification
+  - central banking
+preferred-citation:
+  type: article
+  title: "Beyond 99%: Open-Set Evaluation Reveals Silent Failures of Counterfeit Banknote Detectors, and the Case for One-Class Screening"
+  authors:
+    - family-names: "Chongmankhong"
+      given-names: "Thanatchon"
+  year: 2026
+  notes: "Preprint"
