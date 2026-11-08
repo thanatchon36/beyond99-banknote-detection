@@ -21,3 +21,7 @@ paper/*.synctex.gz
 # OS
 .DS_Store
 Thumbs.db
+
+# tooling and build outputs
+.pytest_cache/
+paper/arxiv.tar.gz

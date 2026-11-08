@@ -1,0 +1,32 @@
+{
+  "title": "beyond99-banknote-detection",
+  "upload_type": "software",
+  "description": "Code, results and paper for open-set evaluation of counterfeit banknote detectors: ten supervised classifiers, four one-class detectors and four hybrids on the UCI Banknote Authentication data, scored by leave-one-family-out (LOFO) on counterfeit families withheld from training at a fixed 1% genuine-rejection budget, with mean and worst-family detection, robustness over family granularity and budget, a mechanism analysis and ready-to-use trained detectors. Companion software to the preprint \"Beyond 99%: Open-Set Evaluation Reveals Silent Failures of Counterfeit Banknote Detectors, and the Case for One-Class Screening\".",
+  "creators": [
+    {
+      "name": "Chongmankhong, Thanatchon"
+    }
+  ],
+  "license": "mit",
+  "keywords": [
+    "counterfeit detection",
+    "banknote authentication",
+    "open-set recognition",
+    "one-class classification",
+    "central banking"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://thanatchon36.github.io/beyond99-banknote-detection/paper/",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-preprint",
+      "scheme": "url"
+    },
+    {
+      "identifier": "10.24432/C55P57",
+      "relation": "references",
+      "resource_type": "dataset",
+      "scheme": "doi"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+[project]
+name = "beyond99-banknote-detection"
+version = "0.1.0"
+description = "Open-set evaluation of counterfeit banknote detectors on counterfeit families they have never seen"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Thanatchon Chongmankhong" }]
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "scipy>=1.11",
+    "scikit-learn>=1.4",
+    "xgboost>=2.0",
+    "lightgbm>=4.0",
+    "matplotlib>=3.8",
+    "joblib>=1.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.urls]
+Repository = "https://github.com/thanatchon36/beyond99-banknote-detection"
+Paper = "https://thanatchon36.github.io/beyond99-banknote-detection/paper/"
+
+[tool.uv]
+package = false   # the experiments are scripts in code/, not an installable package
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

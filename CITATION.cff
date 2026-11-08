@@ -1,24 +1,28 @@
 cff-version: 1.2.0
-message: "If you use this code or these results, please cite the preprint below."
-title: "Beyond 99%: Open-Set Evaluation of Counterfeit Banknote Detectors"
-authors:
-  - family-names: "Chongmankhong"
-    given-names: "Thanatchon"
-version: "0.1.0"
-date-released: "2026-11-08"
-license: MIT
+message: "Please cite the paper (preferred-citation); if you use the code or the trained detectors, also cite the software."
+title: "beyond99-banknote-detection: open-set evaluation of counterfeit banknote detectors"
+abstract: >-
+  Code, results and paper for open-set evaluation of counterfeit banknote
+  detectors: ten supervised classifiers, four one-class detectors and four
+  hybrids on the UCI Banknote Authentication data, scored by
+  leave-one-family-out on counterfeit families withheld from training at a
+  fixed 1% genuine-rejection budget.
 type: software
-keywords:
-  - counterfeit detection
-  - banknote authentication
-  - open-set recognition
-  - one-class classification
-  - central banking
+authors:
+  - family-names: Chongmankhong
+    given-names: Thanatchon
+version: 0.1.0
+date-released: 2026-11-08
+license: MIT
+repository-code: "https://github.com/thanatchon36/beyond99-banknote-detection"
+url: "https://thanatchon36.github.io/beyond99-banknote-detection/paper/"
+keywords: [counterfeit-detection, banknote-authentication, open-set-recognition, one-class-classification, central-banking]
 preferred-citation:
   type: article
   title: "Beyond 99%: Open-Set Evaluation Reveals Silent Failures of Counterfeit Banknote Detectors, and the Case for One-Class Screening"
   authors:
-    - family-names: "Chongmankhong"
-      given-names: "Thanatchon"
+    - family-names: Chongmankhong
+      given-names: Thanatchon
   year: 2026
+  url: "https://thanatchon36.github.io/beyond99-banknote-detection/paper/"
   notes: "Preprint"

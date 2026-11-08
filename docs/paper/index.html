@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Beyond 99%</title>
+<meta name="description" content="Preprint: open-set evaluation of counterfeit banknote detectors on counterfeit families they have never seen.">
+<meta name="author" content="Thanatchon Chongmankhong">
+<style>
+/* Web reader for paper/paper.tex, in the format of the thainowcast reader: one reading column
+   (~46rem) with a results strip up top. System font stacks only: the page is a single self-contained
+   file with no third-party requests. Colour tokens on :root, redefined for dark. */
+:root {
+  --paper: #fbfbf9; --ink: #17191c; --ink-2: #4c5058; --rule: #dcdcd6;
+  --accent: #1f5fae; --accent-soft: #e6eef8;
+  --pos: #1d6b52; --pos-soft: #e3f1ea; --null: #6b6f78; --null-soft: #eeeeea;
+  --find: #8a5a12; --find-soft: #f6eedd; --plate: #ffffff; --quote: #f3f3ef;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #15171a; --ink: #e8e9ec; --ink-2: #a6abb4; --rule: #30343a;
+    --accent: #7fb0ec; --accent-soft: #1b2a3d; --pos: #7dcfac; --pos-soft: #16302a;
+    --null: #a6abb4; --null-soft: #23262b; --find: #e7bd73; --find-soft: #33291a;
+    --plate: #f4f4f2; --quote: #1d2024; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #15171a; --ink: #e8e9ec; --ink-2: #a6abb4; --rule: #30343a;
+  --accent: #7fb0ec; --accent-soft: #1b2a3d; --pos: #7dcfac; --pos-soft: #16302a;
+  --null: #a6abb4; --null-soft: #23262b; --find: #e7bd73; --find-soft: #33291a;
+  --plate: #f4f4f2; --quote: #1d2024; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.62 var(--font-body); }
+.page { max-width: 46rem; margin: 0 auto; padding-inline: 16px; padding-block: 48px 72px;
+  display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 650; text-wrap: balance; line-height: 1.2; }
+h1 { font-size: clamp(1.7rem, 4.2vw, 2.35rem); margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 1.4rem; margin: 2.2em 0 0.5em; }
+h3 { font-size: 1.12rem; margin: 1.8em 0 0.4em; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+code { font: 500 0.84em var(--font-mono); overflow-wrap: anywhere; }
+pre { background: var(--quote); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px;
+  overflow-x: auto; font-size: 0.84rem; line-height: 1.5; }
+pre code { font-weight: 400; font-size: inherit; overflow-wrap: normal; }
+.masthead { display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid var(--rule); padding-bottom: 28px; }
+.kicker { margin: 0; font: 500 0.78rem var(--font-mono); text-transform: uppercase; letter-spacing: 0.09em; color: var(--accent); }
+.subtitle { margin: 0; font-style: italic; color: var(--ink-2); font-size: 1.05rem; }
+.byline { margin: 0; color: var(--ink-2); }
+.meta { margin: 0; font: 400 0.8rem/1.6 var(--font-mono); color: var(--ink-2); }
+.meta b { font-weight: 500; color: var(--ink); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 0; padding: 0; list-style: none; }
+.actions a { display: inline-block; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 999px;
+  font: 500 0.78rem var(--font-mono); text-decoration: none; color: var(--ink); }
+.actions a:hover { border-color: var(--accent); color: var(--accent); }
+.abstract h2, .results h2, .toc h2, .cite h2 { margin: 0 0 10px; font-size: 0.82rem; font-family: var(--font-mono);
+  font-weight: 500; text-transform: uppercase; letter-spacing: 0.09em; color: var(--ink-2); }
+.abstract-body p { margin: 0 0 0.8em; font-size: 1.04rem; }
+.abstract-body p:last-child { margin-bottom: 0; }
+.results .note { margin: 0 0 14px; color: var(--ink-2); font-size: 0.95rem; }
+.result-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 8px; }
+.r { display: grid; grid-template-columns: auto 1fr; grid-template-areas: "id tag" "text text"; gap: 2px 10px;
+  align-content: start; padding: 10px 12px; border-radius: 6px; border-left: 3px solid; font-size: 0.9rem; line-height: 1.4; }
+.r-pos { background: var(--pos-soft); border-color: var(--pos); }
+.r-ref { background: var(--find-soft); border-color: var(--find); }
+.r-null, .r-nf { background: var(--null-soft); border-color: var(--null); }
+.r-id { grid-area: id; font: 500 0.85rem var(--font-mono); }
+.r-text { grid-area: text; }
+.r-text small { display: block; color: var(--ink-2); font-size: 0.8rem; margin-top: 2px; }
+.toc ul { margin: 0; padding-left: 1.2em; columns: 2 14rem; column-gap: 32px; }
+.toc li { break-inside: avoid; }
+.toc ul ul { columns: 1; padding-left: 1em; font-size: 0.92em; color: var(--ink-2); }
+.toc a { text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+.paper h1 { font-size: 1.55rem; margin: 2em 0 0.5em; padding-top: 0.6em; border-top: 1px solid var(--rule); }
+.paper p, .paper li { hyphens: auto; }
+.paper p { margin: 0 0 1em; }
+.paper math[display="block"] { overflow-x: auto; max-width: 100%; }
+/* MathML does not line-break: a long inline formula scrolls on its own instead of widening the page */
+.paper p > math { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+.paper .header-section-number { color: var(--accent); margin-right: 0.5em; font-family: var(--font-mono); font-size: 0.85em; font-weight: 500; }
+.paper blockquote { margin: 1.2em 0; padding: 10px 16px; border-left: 3px solid var(--rule); background: var(--quote);
+  border-radius: 0 6px 6px 0; font-size: 0.93rem; color: var(--ink-2); }
+.paper blockquote p:last-child { margin-bottom: 0; }
+figure { margin: 1.6em 0; display: flex; flex-direction: column; gap: 10px; }
+figure img { background: var(--plate); padding: 12px; border-radius: 6px; border: 1px solid var(--rule); max-width: 100%; height: auto; }
+/* the night-lights images are dark by design: no light plate around them */
+figure img.night { background: #03060d; padding: 0; }
+figcaption, caption, .tcap { font-size: 0.88rem; color: var(--ink-2); line-height: 1.45; text-align: left; }
+caption { caption-side: top; padding-bottom: 8px; }
+.tbl { margin: 1.6em 0; }
+.paper .tcap { margin: 0 0 8px; hyphens: auto; }
+.tscroll { overflow-x: auto; }
+/* Tables keep their natural width (scrolling sideways when wider than the column); only long text cells wrap. */
+.paper table { border-collapse: collapse; width: max-content; min-width: 100%;
+  font: 400 0.78rem/1.45 var(--font-mono); font-variant-numeric: tabular-nums; }
+.paper td { max-width: 17em; }
+/* Code in table cells must not break per letter on phones; the table scrolls sideways instead. */
+.paper table code { overflow-wrap: normal; word-break: normal; white-space: nowrap; }
+th, td { padding: 6px 10px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+th { font-weight: 500; color: var(--ink-2); border-bottom-color: var(--ink-2); }
+.paper strong { font-weight: 650; }
+.cite { min-width: 0; }
+/* BibTeX keeps its lines intact (no mid-URL breaks); the block scrolls sideways on narrow screens. */
+.cite pre { overflow-x: auto; }
+.cite pre, .cite pre code { white-space: pre; overflow-wrap: normal; word-break: normal; }
+.algo { margin: 1.6em 0; padding: 12px 16px; border: 1px solid var(--rule); border-radius: 6px; background: var(--quote); }
+.paper .algo .tcap { margin: 0 0 8px; }
+.algo ol { margin: 0; padding-left: 1.6em; font-size: 0.92rem; }
+.algo ol ol { padding-left: 1.4em; }
+.tablenotes { font-size: 0.82rem; color: var(--ink-2); }
+.colophon { border-top: 1px solid var(--rule); padding-top: 20px; color: var(--ink-2); font-size: 0.85rem; }
+.colophon p { margin: 0 0 0.7em; }
+@media (max-width: 480px) { body { font-size: 16px; } .page { padding-block: 28px 48px; gap: 28px; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="page">
+<header class="masthead">
+  <p class="kicker">Preprint · beyond99-banknote-detection</p>
+  <h1>Beyond 99%: Open-Set Evaluation Reveals Silent Failures of Counterfeit Banknote Detectors, and the Case for One-Class Screening</h1>
+  <p class="byline">Thanatchon Chongmankhong · <a href="https://github.com/thanatchon36/beyond99-banknote-detection">github.com/thanatchon36/beyond99-banknote-detection</a></p>
+  <p class="meta"><b>November 2026</b> · Counterfeit detection, Banknote authentication, Open-set recognition, One-class classification, Tree ensembles, Evaluation methodology, Central banking</p>
+  <ul class="actions"><li><a href="paper.pdf">Download PDF</a></li><li><a href="https://github.com/thanatchon36/beyond99-banknote-detection">Code and replication</a></li><li><a href="https://doi.org/10.24432/C55P57">Data (UCI)</a></li></ul>
+</header>
+<section class="abstract" aria-label="Abstract">
+  <h2>Abstract</h2>
+  <div class="abstract-body"><p>Machine-learning studies of banknote authentication routinely report 98–100% accuracy, and the UCI Banknote Authentication benchmark is effectively saturated. These figures come from random train–test splits in which every counterfeit production process (“family”) is represented on both sides of the split. Operationally, however, the costly error is a counterfeit from a family the detector has never seen. We formalise counterfeit detection as an open-set problem and introduce a leave-one-family-out (LOFO) protocol scored at a fixed genuine-rejection budget, reporting both mean and worst-family detection. Applying it to ten supervised classifiers, four one-class detectors and a <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">2\times2</annotation></semantics></math> grid of hybrids, we find that random-split evaluation is uninformative: every supervised model catches at least 98.8% of counterfeits, and the best tree ensemble is statistically indistinguishable from a multilayer perceptron (corrected resampled <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>-test, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>0.24</mn></mrow><annotation encoding="application/x-tex">p=0.24</annotation></semantics></math>). Under LOFO at a 1% genuine-rejection budget, gradient-boosted and random-forest classifiers detect only 51–61% of unseen-family counterfeits (29–39% on the hardest family), whereas an autoencoder trained on genuine notes alone detects 99.98% (95% CI 99.94–100). Of the counterfeits that XGBoost accepted, 98.9% lie outside the region holding 99% of genuine notes: the failure is extrapolation, not class overlap, and it persists for every family granularity from two to six families. A back-of-the-envelope model shows that in a low-incidence economy such as Thailand the macroeconomic cost of counterfeiting is negligible (below 0.01% of GDP even at Canada’s 2004 peak incidence), while losses fall on small cash recipients; the policy objective therefore shifts from marginal accuracy to coverage and novelty detection. We release code that regenerates every number and figure, and we outline a pre-specified study on multispectral Thai banknote data.</p></div>
+</section>
+<section class="results" aria-label="Results at a glance">
+  <h2>Results at a glance</h2>
+  <p class="note">Headline numbers, computed from the result files: counterfeits detected at a 1% genuine-rejection budget. Amber: where supervised detectors fail; green: one-class screening; grey: pending.</p>
+  <ul class="result-list"><li class="r r-ref"><span class="r-id">Random split</span><span class="r-text">Every supervised detector catches at least 98.8% of counterfeits<small>1% genuine-rejection budget; the UCI benchmark is saturated and cannot rank models</small></span></li>
+<li class="r r-ref"><span class="r-id">Unseen family · trees</span><span class="r-text">XGBoost, random forest and LightGBM catch 51–61%<small>only 29–39% of the hardest family; leave-one-family-out, K = 3, 10 seeds</small></span></li>
+<li class="r r-pos"><span class="r-id">Unseen family · one-class</span><span class="r-text">An autoencoder trained on genuine notes alone catches 99.98%<small>95% CI 99.9–100.0; 1.7% of genuine notes rejected; Mahalanobis 98.8%</small></span></li>
+<li class="r r-ref"><span class="r-id">Mechanism</span><span class="r-text">98.9% of the counterfeits XGBoost accepted lie outside the 99% genuine region<small>the failure is extrapolation, not class overlap</small></span></li>
+<li class="r r-pos"><span class="r-id">Robustness</span><span class="r-text">Autoencoder at or above 99.9% for every K from 2 to 6<small>mean and worst family; the tree ensembles never exceed 78.1% on average</small></span></li>
+<li class="r r-null"><span class="r-id">Thai banknotes</span><span class="r-text">Multispectral Thai data pending<small>a pre-specified follow-up study on infrared, ultraviolet and magnetic features (Section 8)</small></span></li></ul>
+</section>
+<nav class="toc" aria-label="Contents"><h2>Contents</h2>
+<ul>
+<li><a href="#sec:intro" id="toc-sec:intro"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#sec:related" id="toc-sec:related"><span class="toc-section-number">2</span> Background and related work</a></li>
+<li><a href="#sec:problem" id="toc-sec:problem"><span class="toc-section-number">3</span> Problem formulation</a></li>
+<li><a href="#sec:design" id="toc-sec:design"><span class="toc-section-number">4</span> Experimental design</a></li>
+<li><a href="#sec:results" id="toc-sec:results"><span class="toc-section-number">5</span> Results</a></li>
+<li><a href="#sec:econ" id="toc-sec:econ"><span class="toc-section-number">6</span> Economic analysis and policy implications</a></li>
+<li><a href="#sec:discussion" id="toc-sec:discussion"><span class="toc-section-number">7</span> Discussion</a></li>
+<li><a href="#sec:agenda" id="toc-sec:agenda"><span class="toc-section-number">8</span> A research agenda for Thai banknotes</a></li>
+<li><a href="#conclusion" id="toc-conclusion"><span class="toc-section-number">9</span> Conclusion</a></li>
+<li><a href="#data-and-code-availability" id="toc-data-and-code-availability">Data and code availability</a></li>
+<li><a href="#acknowledgements" id="toc-acknowledgements">Acknowledgements</a></li>
+<li><a href="#app:hyper" id="toc-app:hyper"><span class="toc-section-number">A</span> Hyperparameters</a></li>
+<li><a href="#app:toy" id="toc-app:toy"><span class="toc-section-number">B</span> Synthetic illustration</a></li>
+</ul>
+</nav>
+<article class="paper">
+<figure id="fig:teaser" data-latex-placement="t">
+<img loading="lazy" src="figures/fig1_teaser.png" />
+<figcaption><b>Figure 1.</b> <strong>Random splits hide silent failures on unseen counterfeit families.</strong> For each detector, the hollow grey circle is the share of counterfeits detected under the standard random train–test split; the filled circle is the mean share detected when an entire counterfeit family is withheld from training (LOFO, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">K=3</annotation></semantics></math> families, 10 seeds; shaded bar: 95% bootstrap confidence interval), and the diamond is the worst held-out family. All detectors operate at a 1% genuine-rejection budget calibrated on held-out genuine notes. Right-hand columns: unseen-family detection and its change relative to the random split, in percentage points. Data: UCI Banknote Authentication.</figcaption>
+</figure>
+<h1 data-number="1" id="sec:intro"><span class="header-section-number">1</span> Introduction</h1>
+<p>Cash remains a payment instrument of last resort and a store of value, and its usefulness rests on the public’s confidence that a banknote is genuine. Central banks therefore monitor counterfeiting closely, usually as the number of counterfeits detected per year per million genuine notes in circulation (parts per million, ppm), and most authentication now happens inside machines: high-speed sorters at central banks and cash centres, recyclers and automated teller machines, and bill validators in vending and gaming equipment. These machines combine optical, infrared, ultraviolet and magnetic sensing <span class="citation" data-cites="lee2017survey">(<a href="#ref-lee2017survey" role="doc-biblioref">Lee et al. 2017</a>)</span>. Because counterfeiters adapt to whatever is checked, authentication is adversarial and non-stationary: new counterfeit production processes—which we call <em>families</em>—appear over time and differ in printing technology, substrate and workshop.</p>
+<p>The machine-learning literature reports near-perfect results. On the widely used UCI Banknote Authentication data <span class="citation" data-cites="lohweg2013banknote uci_banknote">(<a href="#ref-lohweg2013banknote" role="doc-biblioref">Lohweg et al. 2013</a>; <a href="#ref-uci_banknote" role="doc-biblioref">Lohweg 2013</a>)</span>, accuracies between 98% and 100% are common across support vector machines, nearest neighbours, tree ensembles and neural networks, and convolutional networks trained on sensor images from counting machines report similar figures <span class="citation" data-cites="lee2017survey pham2020fake">(<a href="#ref-lee2017survey" role="doc-biblioref">Lee et al. 2017</a>; <a href="#ref-pham2020fake" role="doc-biblioref">Pham et al. 2020</a>)</span>. This invites the question practitioners most often ask: which model is best, and in particular, should one prefer tree ensembles, which tend to dominate on tabular data <span class="citation" data-cites="grinsztajn2022tree shwartzziv2022tabular">(<a href="#ref-grinsztajn2022tree" role="doc-biblioref">Grinsztajn et al. 2022</a>; <a href="#ref-shwartzziv2022tabular" role="doc-biblioref">Shwartz-Ziv and Armon 2022</a>)</span>, or deep networks?</p>
+<p>We argue that, under the prevailing evaluation protocol, the question is ill-posed. Random train–test splits place counterfeits from every family on both sides of the split, so they measure <em>interpolation within known families</em>. The operationally costly error is different: accepting a counterfeit from a family that was absent from training. An accepted counterfeit can be recirculated to the public through cash dispensers, whereas a rejected genuine note merely costs manual handling. Central-bank testing regimes encode this asymmetry; the European Central Bank’s recirculation framework, for instance, requires machines to recognise every counterfeit in reference sets that are updated as new types appear <span class="citation" data-cites="ecb2010decision">(<a href="#ref-ecb2010decision" role="doc-biblioref">European Central Bank 2010</a>)</span>. The relevant evaluation is therefore <em>open-set</em> <span class="citation" data-cites="scheirer2013toward">(<a href="#ref-scheirer2013toward" role="doc-biblioref">Scheirer et al. 2013</a>)</span> and should be scored at an operating point that bounds the rejection of genuine notes.</p>
+<p>This paper makes that evaluation concrete and measures what it changes. Our contributions are:</p>
+<ol>
+<li><p><strong>An open-set protocol for counterfeit detection.</strong> We define leave-one-family-out (LOFO) evaluation at a fixed genuine-rejection budget, with worst-family reporting (Section <a href="#sec:problem" data-reference-type="ref" data-reference="sec:problem">3</a>), and show that random splits overstate detection of unseen counterfeits by up to 48 percentage points (Figure <a href="#fig:teaser" data-reference-type="ref" data-reference="fig:teaser">1</a>).</p></li>
+<li><p><strong>A controlled comparison across five regimes.</strong> Eighteen detectors are compared under random splits, scarce data, weaker features, sensor noise and unseen families, which resolves the tree-versus-deep question into regime-specific answers (Section <a href="#sec:results" data-reference-type="ref" data-reference="sec:results">5</a>).</p></li>
+<li><p><strong>A geometric account of the failure.</strong> We show why supervised detectors extrapolate arbitrarily (Remark <a href="#rem:extrapolation" data-reference-type="ref" data-reference="rem:extrapolation">1</a>) and confirm it on the real data: 98.9% of the counterfeits accepted by XGBoost lie outside the 99% region of the genuine class (Figure <a href="#fig:mechanism" data-reference-type="ref" data-reference="fig:mechanism">6</a>).</p></li>
+<li><p><strong>An economic framing.</strong> An order-of-magnitude model and a redesign-versus-detection decision rule connect detector design to policy in a low-incidence economy, Thailand (Section <a href="#sec:econ" data-reference-type="ref" data-reference="sec:econ">6</a>).</p></li>
+<li><p><strong>Reproducibility and a research agenda.</strong> Code regenerates every table and figure in about ten CPU-minutes, and we pre-specify hypotheses for a study on multispectral Thai banknote data (Section <a href="#sec:agenda" data-reference-type="ref" data-reference="sec:agenda">8</a>).</p></li>
+</ol>
+<h1 data-number="2" id="sec:related"><span class="header-section-number">2</span> Background and related work</h1>
+<h2 data-number="2.1" id="counterfeiting-incidence-measurement-and-economics"><span class="header-section-number">2.1</span> Counterfeiting: incidence, measurement and economics</h2>
+<p>Table <a href="#tab:incidence" data-reference-type="ref" data-reference="tab:incidence">1</a> collects indicative incidence levels from issuers’ public communications. Three patterns matter for this paper. First, incidence in advanced economies is low, typically tens of ppm or less <span class="citation" data-cites="ecb_stats fed_currency">(<a href="#ref-ecb_stats" role="doc-biblioref">European Central Bank 2019--2025</a>; <a href="#ref-fed_currency" role="doc-biblioref">Board of Governors of the Federal Reserve System 2024</a>)</span>. Second, incidence can rise quickly when a widely used denomination becomes an easy target, as in Canada in the early 2000s, where it peaked near 470 ppm in 2004 before an integrated strategy of new designs, retailer verification and enforcement brought it down <span class="citation" data-cites="chant2004counterfeiting boc_counterfeit">(<a href="#ref-chant2004counterfeiting" role="doc-biblioref">Chant 2004</a>; <a href="#ref-boc_counterfeit" role="doc-biblioref">Bank of Canada 2024</a>)</span>. Third, substrate changes help but do not settle the matter: the United Kingdom saw counterfeiting fall after its polymer series <span class="citation" data-cites="boe_counterfeit">(<a href="#ref-boe_counterfeit" role="doc-biblioref">Bank of England 2024</a>)</span>, whereas Australia, already polymer since the 1990s, still faced a rise in the mid-2010s that motivated a new series <span class="citation" data-cites="rba_counterfeit">(<a href="#ref-rba_counterfeit" role="doc-biblioref">Reserve Bank of Australia 2020</a>)</span>.</p>
+<div class="threeparttable">
+<div id="tab:incidence">
+<div class="tbl"><p class="tcap"><b>Table 1.</b> Indicative counterfeit incidence and recent design responses (orders of magnitude).</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th>Issuer</th>
+<th>Approximate incidence</th>
+<th>Context and design response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Euro area (ECB)</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≈</mo><annotation encoding="application/x-tex">\approx</annotation></semantics></math>10–20 ppm, 2019–2024</td>
+<td>EUR 20 and EUR 50 notes most affected; second series introduced 2013–2019</td>
+</tr>
+<tr>
+<td>United States (Federal Reserve)</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>&lt;</mo><annotation encoding="application/x-tex">&lt;</annotation></semantics></math>100 ppm (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>&lt;</mo><annotation encoding="application/x-tex">&lt;</annotation></semantics></math>0.01%)</td>
+<td>Measurement complicated by large foreign holdings; redesigned $100 note (2013)</td>
+</tr>
+<tr>
+<td>Canada (Bank of Canada)</td>
+<td>peak <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>≈</mo><annotation encoding="application/x-tex">\approx</annotation></semantics></math>470 ppm (2004)</td>
+<td>Integrated strategy; polymer series 2011–2013</td>
+</tr>
+<tr>
+<td>United Kingdom (Bank of England)</td>
+<td>declined after polymer</td>
+<td>Polymer series 2016–2021</td>
+</tr>
+<tr>
+<td>Australia (RBA)</td>
+<td>rise in mid-2010s</td>
+<td>Already polymer; Next Generation series 2016–2020</td>
+</tr>
+<tr>
+<td>Thailand (BOT)</td>
+<td>low by international standards</td>
+<td>Series 17 (2018); polymer 20-baht note (2022)</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<div class="tablenotes">
+<p>Figures are indicative orders of magnitude compiled from issuers’ public communications <span class="citation" data-cites="ecb_stats fed_currency boc_counterfeit boe_counterfeit rba_counterfeit bot_banknotes">(<a href="#ref-ecb_stats" role="doc-biblioref">European Central Bank 2019--2025</a>; <a href="#ref-fed_currency" role="doc-biblioref">Board of Governors of the Federal Reserve System 2024</a>; <a href="#ref-boc_counterfeit" role="doc-biblioref">Bank of Canada 2024</a>; <a href="#ref-boe_counterfeit" role="doc-biblioref">Bank of England 2024</a>; <a href="#ref-rba_counterfeit" role="doc-biblioref">Reserve Bank of Australia 2020</a>; <a href="#ref-bot_banknotes" role="doc-biblioref">Bank of Thailand 2024</a>)</span>; exact values depend on year and definition.</p>
+<p>We use <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>∼</mo><annotation encoding="application/x-tex">\sim</annotation></semantics></math>1 ppm only as an order-of-magnitude working assumption in Section <a href="#sec:econ" data-reference-type="ref" data-reference="sec:econ">6</a>, to be replaced by official statistics.</p>
+</div>
+</div>
+<p>Economic theory treats counterfeiting as a private claim on seigniorage that is constrained by verification. <span class="citation" data-cites="nosal2007model">Nosal and Wallace (<a href="#ref-nosal2007model" role="doc-biblioref">2007</a>)</span> show that the mere threat of counterfeiting can shape monetary equilibria; <span class="citation" data-cites="quercioli2015economics">Quercioli and Smith (<a href="#ref-quercioli2015economics" role="doc-biblioref">2015</a>)</span> model the joint choice of counterfeiting and verification effort across denominations; <span class="citation" data-cites="fung2011modelling">Fung and Shao (<a href="#ref-fung2011modelling" role="doc-biblioref">2011</a>)</span> review this literature, and <span class="citation" data-cites="judson2003estimating">Judson and Porter (<a href="#ref-judson2003estimating" role="doc-biblioref">2003</a>)</span> discuss the measurement problem for a currency held largely abroad. Costs arise through four channels: the face value lost by the last, uncompensated holder; the erosion of confidence, visible when merchants refuse high denominations; the cost of deterrence, including new series, machine upgrades and verification time at the point of sale; and tail risks from organised or state-sponsored counterfeiting. Section <a href="#sec:econ" data-reference-type="ref" data-reference="sec:econ">6</a> quantifies the first channel and argues that the others dominate.</p>
+<h2 data-number="2.2" id="machine-authentication-in-the-cash-cycle"><span class="header-section-number">2.2</span> Machine authentication in the cash cycle</h2>
+<p>Security features are commonly grouped into three levels (Table <a href="#tab:levels" data-reference-type="ref" data-reference="tab:levels">2</a>). Level-1 features such as watermarks, security threads, colour-shifting inks and intaglio relief are meant for the public; Level-2 features such as infrared patterns, ultraviolet fluorescence and magnetic inks are read by commercial machines; Level-3 features are covert and read only by central-bank sorters, the euro’s machine-readable “M-feature” being a well-known example. Banknote paper also lacks the optical brighteners of ordinary paper, so it stays dark under ultraviolet light. Major equipment suppliers include Giesecke+Devrient, Toshiba, Glory, Crane Payment Innovations, Kisan Electronics, Julong and GRG Banking for sorters and counters, and JCM and Innovative Technology for bill validators. None publishes its authentication models; disclosed patents mostly describe template matching per denomination combined with decision rules.</p>
+<div id="tab:levels">
+<div class="tbl"><p class="tcap"><b>Table 2.</b> Levels of banknote security features and how they are verified.</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Verified by</th>
+<th>Typical features</th>
+<th>Sensing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (public)</td>
+<td>People, merchants</td>
+<td>Watermark, security thread, colour-shifting ink, intaglio relief, foil</td>
+<td>Sight, touch, tilt</td>
+</tr>
+<tr>
+<td>2 (machine)</td>
+<td>Banks, ATMs, retail devices</td>
+<td>Infrared-responsive print, UV fluorescence, magnetic ink and threads</td>
+<td>IR/UV/visible imaging, magnetic heads</td>
+</tr>
+<tr>
+<td>3 (covert)</td>
+<td>Central banks only</td>
+<td>Proprietary machine-readable luminescent features</td>
+<td>High-speed sorters</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<p>Institutions shape the evaluation standard. Under the ECB’s recirculation framework, machine types must correctly classify every counterfeit in test sets held by national central banks, and they must be updated as new counterfeit types appear <span class="citation" data-cites="ecb2010decision">(<a href="#ref-ecb2010decision" role="doc-biblioref">European Central Bank 2010</a>)</span>. Upstream, the Central Bank Counterfeit Deterrence Group promotes a Counterfeit Deterrence System that prevents image-editing software, scanners and printers from processing banknote images. Both mechanisms are, in effect, defences against <em>novel</em> threats, which is the setting our protocol formalises.</p>
+<h2 data-number="2.3" id="machine-learning-for-banknote-authentication"><span class="header-section-number">2.3</span> Machine learning for banknote authentication</h2>
+<p>The UCI data of <span class="citation" data-cites="lohweg2013banknote">Lohweg et al. (<a href="#ref-lohweg2013banknote" role="doc-biblioref">2013</a>)</span> summarise each specimen by four statistics of a wavelet-transformed image and have become a standard teaching and benchmarking set. Image-based work trains convolutional networks on visible-reflection and infrared-transmission images from the line sensors of counting machines, for denomination recognition, fitness classification and counterfeit detection <span class="citation" data-cites="lee2017survey pham2020fake">(<a href="#ref-lee2017survey" role="doc-biblioref">Lee et al. 2017</a>; <a href="#ref-pham2020fake" role="doc-biblioref">Pham et al. 2020</a>)</span>. Other strands use multispectral imaging to separate inks and substrates, smartphone cameras for assistive or merchant-facing checks (restricted to the visible spectrum), and laboratory spectroscopy to link seized counterfeits to common sources. Across these strands, evaluation is overwhelmingly by random splits of a single pool of counterfeits; held-out counterfeit types are rarely tested.</p>
+<h2 data-number="2.4" id="tree-ensembles-versus-deep-networks-on-tabular-data"><span class="header-section-number">2.4</span> Tree ensembles versus deep networks on tabular data</h2>
+<p>Benchmarks find that tree ensembles such as random forests <span class="citation" data-cites="breiman2001random">(<a href="#ref-breiman2001random" role="doc-biblioref">Breiman 2001</a>)</span>, extremely randomised trees <span class="citation" data-cites="geurts2006extremely">(<a href="#ref-geurts2006extremely" role="doc-biblioref">Geurts et al. 2006</a>)</span>, XGBoost <span class="citation" data-cites="chen2016xgboost">(<a href="#ref-chen2016xgboost" role="doc-biblioref">Chen and Guestrin 2016</a>)</span> and LightGBM <span class="citation" data-cites="ke2017lightgbm">(<a href="#ref-ke2017lightgbm" role="doc-biblioref">Ke et al. 2017</a>)</span> often outperform deep networks on typical tabular data, partly because neural networks are biased towards smooth solutions and are hurt by uninformative features <span class="citation" data-cites="grinsztajn2022tree shwartzziv2022tabular">(<a href="#ref-grinsztajn2022tree" role="doc-biblioref">Grinsztajn et al. 2022</a>; <a href="#ref-shwartzziv2022tabular" role="doc-biblioref">Shwartz-Ziv and Armon 2022</a>)</span>; tabular foundation models now challenge this picture on small data <span class="citation" data-cites="hollmann2025tabpfn">(<a href="#ref-hollmann2025tabpfn" role="doc-biblioref">Hollmann et al. 2025</a>)</span>. The UCI banknote features sit at the other end of that spectrum: four informative features and a smooth, oblique class boundary. In-distribution, theory therefore favours smooth learners. Out of distribution, the relevant property is extrapolation, and here trees are known to predict constants beyond their training range.</p>
+<h2 data-number="2.5" id="open-set-recognition-novelty-detection-and-evaluation-leakage"><span class="header-section-number">2.5</span> Open-set recognition, novelty detection and evaluation leakage</h2>
+<p>Open-set recognition asks a classifier to reject inputs from classes unseen in training <span class="citation" data-cites="scheirer2013toward">(<a href="#ref-scheirer2013toward" role="doc-biblioref">Scheirer et al. 2013</a>)</span>; for neural networks, a common baseline thresholds the maximum softmax probability <span class="citation" data-cites="hendrycks2017baseline">(<a href="#ref-hendrycks2017baseline" role="doc-biblioref">Hendrycks and Gimpel 2017</a>)</span>, and good closed-set classifiers tend to be good open-set recognisers <span class="citation" data-cites="vaze2022openset">(<a href="#ref-vaze2022openset" role="doc-biblioref">Vaze et al. 2022</a>)</span>. Our setting differs in a way that matters: an unseen counterfeit family carries the <em>same</em> label as known counterfeits, so the supervised classifier has no reason to be uncertain about it, and it can be confidently assigned to the genuine class. One-class methods instead model only the class that is stable over time, here genuine notes: one-class support vector machines <span class="citation" data-cites="scholkopf2001estimating">(<a href="#ref-scholkopf2001estimating" role="doc-biblioref">Schölkopf et al. 2001</a>)</span>, isolation forests <span class="citation" data-cites="liu2008isolation">(<a href="#ref-liu2008isolation" role="doc-biblioref">Liu et al. 2008</a>)</span> and their extended, non-axis-aligned variant <span class="citation" data-cites="hariri2021extended">(<a href="#ref-hariri2021extended" role="doc-biblioref">Hariri et al. 2021</a>)</span>, autoencoders <span class="citation" data-cites="hinton2006reducing">(<a href="#ref-hinton2006reducing" role="doc-biblioref">Hinton and Salakhutdinov 2006</a>)</span>, deep one-class objectives <span class="citation" data-cites="ruff2018deep">(<a href="#ref-ruff2018deep" role="doc-biblioref">Ruff et al. 2018</a>)</span> and patch-level memory banks used in industrial inspection <span class="citation" data-cites="roth2022towards">(<a href="#ref-roth2022towards" role="doc-biblioref">Roth et al. 2022</a>)</span>; see <span class="citation" data-cites="pang2021deep">Pang et al. (<a href="#ref-pang2021deep" role="doc-biblioref">2021</a>)</span> for a review. Finally, grouping-aware evaluation is a recurring remedy for leakage in applied machine learning <span class="citation" data-cites="kapoor2023leakage">(<a href="#ref-kapoor2023leakage" role="doc-biblioref">Kapoor and Narayanan 2023</a>)</span>, and leave-one-domain-out testing is standard in domain generalisation <span class="citation" data-cites="gulrajani2021search">(<a href="#ref-gulrajani2021search" role="doc-biblioref">Gulrajani and Lopez-Paz 2021</a>)</span>. We bring both ideas to counterfeit detection and add operating-point reporting.</p>
+<h1 data-number="3" id="sec:problem"><span class="header-section-number">3</span> Problem formulation</h1>
+<p>Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>∈</mo><msup><mi>ℝ</mi><mi>d</mi></msup></mrow><annotation encoding="application/x-tex">x\in\mathbb{R}^d</annotation></semantics></math> describe a note and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">y\in\{0,1\}</annotation></semantics></math> its class, with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">y=1</annotation></semantics></math> for counterfeits. Genuine notes follow a distribution <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>P</mi><mn>0</mn></msub><annotation encoding="application/x-tex">P_0</annotation></semantics></math>; counterfeits arise from families <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>∈</mo><mi>ℱ</mi></mrow><annotation encoding="application/x-tex">f\in\mathcal{F}</annotation></semantics></math> with distributions <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>P</mi><mi>f</mi></msub><annotation encoding="application/x-tex">P_f</annotation></semantics></math>. A detector is a score <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>:</mo><msup><mi>ℝ</mi><mi>d</mi></msup><mo>→</mo><mi>ℝ</mi></mrow><annotation encoding="application/x-tex">s:\mathbb{R}^d\to\mathbb{R}</annotation></semantics></math>, and a note is flagged when <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>&gt;</mo><mi>τ</mi></mrow><annotation encoding="application/x-tex">s(x)&gt;\tau</annotation></semantics></math>.</p>
+<div class="definition">
+<p><strong>Definition 1</strong> (Operating point and detection). The genuine-rejection rate is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">G</mi><mi mathvariant="normal">R</mi><mi mathvariant="normal">R</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>τ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mrow><mi mathvariant="normal">Pr</mi><mo>&#8289;</mo></mrow><mrow><mi>x</mi><mo>∼</mo><msub><mi>P</mi><mn>0</mn></msub></mrow></msub><mo stretchy="false" form="prefix">[</mo><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>&gt;</mo><mi>τ</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\mathrm{GRR}(\tau)=\Pr_{x\sim P_0}[s(x)&gt;\tau]</annotation></semantics></math>. For a budget <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>, the threshold is the empirical <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>α</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1-\alpha)</annotation></semantics></math>-quantile of scores on held-out genuine validation notes, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>τ</mi><mo accent="true">̂</mo></mover><mi>α</mi></msub><mo>=</mo><msub><mover><mi>Q</mi><mo accent="true">̂</mo></mover><mrow><mn>1</mn><mo>−</mo><mi>α</mi></mrow></msub><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><mo stretchy="false" form="prefix">{</mo><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>:</mo><mi>x</mi><mo>∈</mo><msub><mi>𝒱</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">}</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat\tau_\alpha=\hat Q_{1-\alpha}\big(\{s(x):x\in\mathcal{V}_0\}\big)</annotation></semantics></math>. The counterfeit detection rate on family <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math> is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">R</mi></mrow><mi>f</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>τ</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mrow><mi mathvariant="normal">Pr</mi><mo>&#8289;</mo></mrow><mrow><mi>x</mi><mo>∼</mo><msub><mi>P</mi><mi>f</mi></msub></mrow></msub><mo stretchy="false" form="prefix">[</mo><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>&gt;</mo><mi>τ</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\mathrm{CDR}_f(\tau)=\Pr_{x\sim P_f}[s(x)&gt;\tau]</annotation></semantics></math>.</p>
+</div>
+<p>Calibrating the threshold on genuine notes only mirrors practice: the rejection of genuine notes drives handling cost and can be measured continuously, whereas the counterfeits that matter are, by assumption, not yet available.</p>
+<div class="definition">
+<p><strong>Definition 2</strong> (LOFO detection and the generalisation gap). Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>s</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><annotation encoding="application/x-tex">s^{(-f)}</annotation></semantics></math> be trained on genuine notes and counterfeits from <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℱ</mi><mo>\</mo><mo stretchy="false" form="prefix">{</mo><mi>f</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{F}\setminus\{f\}</annotation></semantics></math>. The LOFO detection rate and the worst-family rate are <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">R</mi></mrow><mrow><mi mathvariant="normal">L</mi><mi mathvariant="normal">O</mi><mi mathvariant="normal">F</mi><mi mathvariant="normal">O</mi></mrow></msub><mo>=</mo><mfrac><mn>1</mn><mrow><mo stretchy="false" form="prefix">|</mo><mi>ℱ</mi><mo stretchy="false" form="prefix">|</mo></mrow></mfrac><munder><mo>∑</mo><mrow><mi>f</mi><mo>∈</mo><mi>ℱ</mi></mrow></munder><msub><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">R</mi></mrow><mi>f</mi></msub><mspace width="-0.167em"></mspace><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><msubsup><mover><mi>τ</mi><mo accent="true">̂</mo></mover><mi>α</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mi>W</mi><mo>=</mo><munder><mi mathvariant="normal">min</mi><mrow><mi>f</mi><mo>∈</mo><mi>ℱ</mi></mrow></munder><msub><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">R</mi></mrow><mi>f</mi></msub><mspace width="-0.167em"></mspace><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">(</mo><msubsup><mover><mi>τ</mi><mo accent="true">̂</mo></mover><mi>α</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\mathrm{CDR}_{\mathrm{LOFO}}=\frac{1}{|\mathcal{F}|}\sum_{f\in\mathcal{F}}\mathrm{CDR}_f\!\big(\hat\tau^{(-f)}_\alpha\big),
+\qquad
+W=\min_{f\in\mathcal{F}}\mathrm{CDR}_f\!\big(\hat\tau^{(-f)}_\alpha\big),
+\end{equation}</annotation></semantics></math> and the generalisation gap is <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mo>=</mo><msub><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">R</mi></mrow><mrow><mi mathvariant="normal">L</mi><mi mathvariant="normal">O</mi><mi mathvariant="normal">F</mi><mi mathvariant="normal">O</mi></mrow></msub><mo>−</mo><msub><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">R</mi></mrow><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\Delta=\mathrm{CDR}_{\mathrm{LOFO}}-\mathrm{CDR}_{\mathrm{random}}</annotation></semantics></math>, where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">R</mi></mrow><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">m</mi></mrow></msub><annotation encoding="application/x-tex">\mathrm{CDR}_{\mathrm{random}}</annotation></semantics></math> is measured on a random split in which all families appear in training.</p>
+</div>
+<p>One-class detectors are trained on genuine notes alone, so for them the held-out family affects only the test set. Algorithm <a href="#alg:lofo" data-reference-type="ref" data-reference="alg:lofo">1</a> summarises the protocol.</p>
+<div class="algo" id="alg:lofo"><p class="tcap"><b>Algorithm 1.</b> LOFO evaluation at a fixed genuine-rejection budget</p>
+<p><strong>Require:</strong> genuine notes <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝒢</mi><annotation encoding="application/x-tex">\mathcal{G}</annotation></semantics></math>; counterfeits with family labels <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>,</mo><msub><mi>f</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\{(x_i,f_i)\}</annotation></semantics></math>; budget <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>; seeds <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>.</mi><mi>.</mi><mi>S</mi></mrow><annotation encoding="application/x-tex">1..S</annotation></semantics></math></p>
+<ol>
+<li><p><strong>for</strong> seed <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>1</mn><mi>.</mi><mi>.</mi><mi>S</mi></mrow><annotation encoding="application/x-tex">=1..S</annotation></semantics></math> <strong>do</strong></p>
+<ol>
+<li><p>split <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝒢</mi><annotation encoding="application/x-tex">\mathcal{G}</annotation></semantics></math> into train / validation / test (50/20/30%)</p></li>
+<li><p><strong>for</strong> each family <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>∈</mo><mi>ℱ</mi></mrow><annotation encoding="application/x-tex">f\in\mathcal{F}</annotation></semantics></math> <strong>do</strong></p>
+<ol>
+<li><p>train <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>s</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><annotation encoding="application/x-tex">s^{(-f)}</annotation></semantics></math> on genuine-train <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>∪</mi><annotation encoding="application/x-tex">\cup</annotation></semantics></math> counterfeits of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℱ</mi><mo>\</mo><mo stretchy="false" form="prefix">{</mo><mi>f</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">\mathcal{F}\setminus\{f\}</annotation></semantics></math> <em>(one-class: genuine-train only)</em></p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>τ</mi><mo accent="true">̂</mo></mover><mo>←</mo></mrow><annotation encoding="application/x-tex">\hat\tau\gets</annotation></semantics></math> empirical <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>α</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1-\alpha)</annotation></semantics></math>-quantile of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>s</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><annotation encoding="application/x-tex">s^{(-f)}</annotation></semantics></math> on genuine-validation</p></li>
+<li><p>record <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">R</mi></mrow><mi>f</mi></msub><mo>=</mo><mtext mathvariant="normal">mean</mtext><mo stretchy="false" form="prefix">[</mo><msup><mi>s</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow></msup><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>&gt;</mo><mover><mi>τ</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\mathrm{CDR}_f=\text{mean}[s^{(-f)}(x)&gt;\hat\tau]</annotation></semantics></math> over family <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">G</mi><mi mathvariant="normal">R</mi><mi mathvariant="normal">R</mi></mrow><annotation encoding="application/x-tex">\mathrm{GRR}</annotation></semantics></math> on genuine-test</p></li>
+</ol></li>
+</ol></li>
+<li><p><strong>return</strong> mean and worst-family <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">C</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">R</mi></mrow><annotation encoding="application/x-tex">\mathrm{CDR}</annotation></semantics></math> with bootstrap intervals over seeds; realised <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">G</mi><mi mathvariant="normal">R</mi><mi mathvariant="normal">R</mi></mrow><annotation encoding="application/x-tex">\mathrm{GRR}</annotation></semantics></math></p></li>
+</ol>
+</div>
+<div id="rem:extrapolation" class="remark">
+<p><em>Remark 1</em> (Extrapolation geometry). For an ensemble of axis-aligned trees, the split thresholds partition <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>ℝ</mi><mi>d</mi></msup><annotation encoding="application/x-tex">\mathbb{R}^d</annotation></semantics></math> into finitely many boxes on which <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math> is constant, and the outer boxes are unbounded. Along any ray <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>0</mn></msub><mo>+</mo><mi>t</mi><mi>v</mi></mrow><annotation encoding="application/x-tex">x_0+tv</annotation></semantics></math>, the score is therefore eventually constant; its limit is set by whichever training notes populated the outermost box, not by distance from the genuine class. A ReLU network is piecewise linear with finitely many linear regions, so its logit is eventually affine in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math> with a direction-dependent sign. Both kinds of supervised detector can thus assign a remote, unseen family to the genuine class with high confidence. By contrast, a score that is coercive in the distance from the genuine class—for example the Mahalanobis score with a positive-definite covariance <span class="citation" data-cites="mahalanobis1936generalized">(<a href="#ref-mahalanobis1936generalized" role="doc-biblioref">Mahalanobis 1936</a>)</span>—diverges along every ray, so any sufficiently remote family is flagged at any fixed threshold. Reconstruction-based autoencoders are coercive only in directions that leave their learned manifold, and isolation forests only outside the axis-aligned range of the training data.</p>
+</div>
+<p>Remark <a href="#rem:extrapolation" data-reference-type="ref" data-reference="rem:extrapolation">1</a> predicts <em>where</em> supervised detectors should fail: on families that are far from the genuine class but lie in directions that the known counterfeit families did not cover. Section <a href="#sec:mechanism" data-reference-type="ref" data-reference="sec:mechanism">5.4</a> tests this prediction.</p>
+<h1 data-number="4" id="sec:design"><span class="header-section-number">4</span> Experimental design</h1>
+<h4 data-number="4.0.0.1" id="data."><span class="header-section-number">4.0.0.1</span> Data.</h4>
+<p>The UCI Banknote Authentication data contain 1,372 specimens (762 genuine, 610 forged) imaged with an industrial print-inspection camera at about 660 dpi; each image is reduced to the variance, skewness, kurtosis and entropy of its wavelet transform <span class="citation" data-cites="lohweg2013banknote uci_banknote">(<a href="#ref-lohweg2013banknote" role="doc-biblioref">Lohweg et al. 2013</a>; <a href="#ref-uci_banknote" role="doc-biblioref">Lohweg 2013</a>)</span>. We use the convention common in the literature that label 0 denotes genuine notes; the original documentation does not state the mapping. The features differ in how much they separate the classes (univariate AUC 0.927, 0.749, 0.536 and 0.519 respectively).</p>
+<h4 data-number="4.0.0.2" id="counterfeit-families."><span class="header-section-number">4.0.0.2</span> Counterfeit families.</h4>
+<p>The data carry no family labels, so we construct proxies by <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>-means clustering of the standardised counterfeit class, choosing <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math> by the silhouette criterion <span class="citation" data-cites="rousseeuw1987silhouettes">(<a href="#ref-rousseeuw1987silhouettes" role="doc-biblioref">Rousseeuw 1987</a>)</span> before any detector is evaluated. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">K=3</annotation></semantics></math> maximises the silhouette (Figure <a href="#fig:data" data-reference-type="ref" data-reference="fig:data">2</a>c) and yields families of 71, 360 and 179 notes. They differ in substance: family 1 departs from genuine notes mainly, and only moderately, in variance, family 0 also in entropy, and family 2 in skewness and kurtosis (Figure <a href="#fig:data" data-reference-type="ref" data-reference="fig:data">2</a>b). Section <a href="#sec:robust" data-reference-type="ref" data-reference="sec:robust">5.5</a> repeats the analysis for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>2</mn><mo>,</mo><mi>…</mi><mo>,</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">K=2,\dots,6</annotation></semantics></math>.</p>
+<figure id="fig:data" data-latex-placement="t">
+<img loading="lazy" src="figures/fig2_data.png" />
+<figcaption><b>Figure 2.</b> <strong>Data and counterfeit families.</strong> (a) Genuine notes (grey; shaded regions hold 50%, 90% and 99% of the kernel density) and the three counterfeit families in the plane of the two most informative features. (b) Medians and inter-quartile ranges of all four features, standardised against genuine notes. (c) Silhouette of the counterfeit clustering for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>2</mn><mo>,</mo><mi>…</mi><mo>,</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">K=2,\dots,6</annotation></semantics></math>; the main analysis uses the maximiser, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">K=3</annotation></semantics></math>.</figcaption>
+</figure>
+<h4 data-number="4.0.0.3" id="detectors."><span class="header-section-number">4.0.0.3</span> Detectors.</h4>
+<p>Ten supervised classifiers: logistic regression, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>-nearest neighbours, an RBF support vector machine, six tree-based models (decision tree, random forest, extra trees, histogram gradient boosting, XGBoost, LightGBM) and a multilayer perceptron (MLP) with three hidden layers of 64 ReLU units trained with Adam <span class="citation" data-cites="kingma2015adam">(<a href="#ref-kingma2015adam" role="doc-biblioref">Kingma and Ba 2015</a>)</span>. Four one-class detectors trained on genuine notes only: isolation forest, one-class SVM, a <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>4</mn><annotation encoding="application/x-tex">4</annotation></semantics></math>–<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>32</mn><annotation encoding="application/x-tex">32</annotation></semantics></math>–<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math>–<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>32</mn><annotation encoding="application/x-tex">32</annotation></semantics></math>–<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>4</mn><annotation encoding="application/x-tex">4</annotation></semantics></math> autoencoder scored by reconstruction error, and the Mahalanobis distance from the genuine mean. Four hybrids cross a supervised component (XGBoost or MLP) with a one-class component (isolation forest or autoencoder) and flag a note if either component flags it, each at budget <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\alpha/2</annotation></semantics></math> so that the union bound keeps <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">G</mi><mi mathvariant="normal">R</mi><mi mathvariant="normal">R</mi></mrow><mo>≤</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">\mathrm{GRR}\le\alpha</annotation></semantics></math> up to estimation error. All hyperparameters were fixed before evaluation and are listed in Appendix <a href="#app:hyper" data-reference-type="ref" data-reference="app:hyper">A</a>; we deliberately avoid tuning so that no result benefits from adaptation to a test set.</p>
+<h4 data-number="4.0.0.4" id="protocols."><span class="header-section-number">4.0.0.4</span> Protocols.</h4>
+<p><strong>E1</strong> (benchmark): repeated stratified 10-fold cross-validation, five repeats. <strong>E2</strong> (scarce data): training sets of 10 to 640 notes drawn from a 70% pool and tested on the remaining 30%, 30 repetitions. <strong>E3</strong> (weaker sensors): the same models after removing the strongest feature (variance), then the two strongest, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">2\times10</annotation></semantics></math>-fold cross-validation. <strong>E4</strong> (sensor noise): models trained on clean data and tested with additive Gaussian noise of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>0.1</mn><mo>,</mo><mn>0.25</mn><mo>,</mo><mn>0.5</mn><mo>,</mo><mn>0.75</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">c\in\{0,0.1,0.25,0.5,0.75,1\}</annotation></semantics></math> training standard deviations, 10 splits <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math> 5 draws. <strong>E5</strong> (unseen families): Algorithm <a href="#alg:lofo" data-reference-type="ref" data-reference="alg:lofo">1</a> with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">K=3</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\alpha=1\%</annotation></semantics></math> and 10 seeds, plus a random 70/30 split of counterfeits with the same genuine partition as reference. <strong>E6</strong> (robustness): E5 repeated for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>2</mn><mo>,</mo><mi>…</mi><mo>,</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">K=2,\dots,6</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>0.2</mn><mo>,</mo><mn>0.5</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>5</mn><mo>,</mo><mn>10</mn><mo>,</mo><mn>20</mn><mo stretchy="false" form="postfix">}</mo><mi>%</mi></mrow><annotation encoding="application/x-tex">\alpha\in\{0.2,0.5,1,2,5,10,20\}\%</annotation></semantics></math>.</p>
+<h4 data-number="4.0.0.5" id="statistical-analysis."><span class="header-section-number">4.0.0.5</span> Statistical analysis.</h4>
+<p>Because cross-validation folds overlap, we compare models in E1 with the corrected resampled <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>-test of <span class="citation" data-cites="nadeau2003inference">Nadeau and Bengio (<a href="#ref-nadeau2003inference" role="doc-biblioref">2003</a>)</span>, complemented by the Wilcoxon signed-rank test <span class="citation" data-cites="bouckaert2004evaluating demsar2006statistical">(<a href="#ref-bouckaert2004evaluating" role="doc-biblioref">Bouckaert and Frank 2004</a>; <a href="#ref-demsar2006statistical" role="doc-biblioref">Demšar 2006</a>)</span>. For E5 and E6 we report percentile bootstrap intervals <span class="citation" data-cites="efron1994introduction">(<a href="#ref-efron1994introduction" role="doc-biblioref">Efron and Tibshirani 1994</a>)</span> over seeds (10,000 resamples) of the seed-level mean across families; for E2 and E4, normal intervals across repetitions. Intervals over seeds capture variation from the genuine partition and model initialisation, not from the construction of families, which E6 addresses separately.</p>
+<h4 data-number="4.0.0.6" id="implementation."><span class="header-section-number">4.0.0.6</span> Implementation.</h4>
+<p>Python 3.12 with scikit-learn 1.9 <span class="citation" data-cites="pedregosa2011scikit">(<a href="#ref-pedregosa2011scikit" role="doc-biblioref"><span class="nocase">Pedregosa et al.</span> 2011</a>)</span>, XGBoost 3.4 and LightGBM 4.7 on a single CPU core. E1–E5 take about five minutes and E6 about five more; scripts regenerate every table and figure.</p>
+<h1 data-number="5" id="sec:results"><span class="header-section-number">5</span> Results</h1>
+<h2 data-number="5.1" id="the-random-split-benchmark-is-saturated"><span class="header-section-number">5.1</span> The random-split benchmark is saturated</h2>
+<p>Table <a href="#tab:e1" data-reference-type="ref" data-reference="tab:e1">3</a> shows that all ten supervised models exceed 98% accuracy under cross-validation. The RBF-SVM and the MLP classify every note correctly; the best tree model, extra trees, reaches 99.88%. The difference between extra trees and the MLP (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.12</mn></mrow><annotation encoding="application/x-tex">-0.12</annotation></semantics></math> pp) is not significant (corrected resampled <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>-test <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>0.24</mn></mrow><annotation encoding="application/x-tex">p=0.24</annotation></semantics></math>; Wilcoxon <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>0.052</mn></mrow><annotation encoding="application/x-tex">p=0.052</annotation></semantics></math>). Every model decides in under 0.1 ms per note on one CPU core, far below the time budget of sorters that process roughly 30–40 notes per second. On this benchmark, then, model choice is not decided by accuracy, and published accuracies of 99–100% carry little information about relative merit.</p>
+<div id="tab:e1">
+<div class="tbl"><p class="tcap"><b>Table 3.</b> E1: random-split benchmark (repeated stratified 10-fold cross-validation, 5 repeats). Miss rate: counterfeits accepted; GRR: genuine notes rejected (default decision threshold).</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Family</th>
+<th>Accuracy (%)</th>
+<th>ROC AUC</th>
+<th>Miss rate (%)</th>
+<th>GRR (%)</th>
+<th>Fit (ms)</th>
+<th>Inference (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>s/note)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SVM (RBF)</td>
+<td>Classical</td>
+<td><strong>100.00</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math> 0.00</td>
+<td>1.0000</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>3</td>
+<td>3.0</td>
+</tr>
+<tr>
+<td>MLP (3<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>64)</td>
+<td>Deep</td>
+<td><strong>100.00</strong> <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math> 0.00</td>
+<td>1.0000</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>384</td>
+<td>4.0</td>
+</tr>
+<tr>
+<td>Extra trees</td>
+<td>Tree</td>
+<td>99.88 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math> 0.27</td>
+<td>1.0000</td>
+<td>0.00</td>
+<td>0.21</td>
+<td>181</td>
+<td>97.8</td>
+</tr>
+<tr>
+<td>k-NN (k = 5)</td>
+<td>Classical</td>
+<td>99.82 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math> 0.31</td>
+<td>0.9987</td>
+<td>0.00</td>
+<td>0.32</td>
+<td>1</td>
+<td>9.3</td>
+</tr>
+<tr>
+<td>XGBoost</td>
+<td>Tree</td>
+<td>99.65 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math> 0.56</td>
+<td>0.9999</td>
+<td>0.36</td>
+<td>0.34</td>
+<td>33</td>
+<td>6.2</td>
+</tr>
+<tr>
+<td>HistGradientBoosting</td>
+<td>Tree</td>
+<td>99.53 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math> 0.67</td>
+<td>0.9999</td>
+<td>0.56</td>
+<td>0.39</td>
+<td>79</td>
+<td>9.9</td>
+</tr>
+<tr>
+<td>Random forest</td>
+<td>Tree</td>
+<td>99.36 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math> 0.76</td>
+<td>0.9999</td>
+<td>0.43</td>
+<td>0.81</td>
+<td>335</td>
+<td>90.7</td>
+</tr>
+<tr>
+<td>LightGBM</td>
+<td>Tree</td>
+<td>99.14 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math> 0.79</td>
+<td>0.9997</td>
+<td>0.72</td>
+<td>0.97</td>
+<td>47</td>
+<td>11.3</td>
+</tr>
+<tr>
+<td>Decision tree</td>
+<td>Tree</td>
+<td>98.44 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math> 0.98</td>
+<td>0.9843</td>
+<td>1.70</td>
+<td>1.44</td>
+<td>2</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Logistic regression</td>
+<td>Classical</td>
+<td>98.10 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>±</mi><annotation encoding="application/x-tex">\pm</annotation></semantics></math> 1.12</td>
+<td>0.9997</td>
+<td>0.49</td>
+<td>3.02</td>
+<td>3</td>
+<td>2.3</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<h2 data-number="5.2" id="scarce-data-weaker-sensors-and-noise"><span class="header-section-number">5.2</span> Scarce data, weaker sensors and noise</h2>
+<p>The regimes in which model families do differ are summarised in Figure <a href="#fig:regimes" data-reference-type="ref" data-reference="fig:regimes">3</a> and Table <a href="#tab:e3" data-reference-type="ref" data-reference="tab:e3">4</a>. With scarce data, smooth models learn much faster: with 80 training notes the MLP reaches 98.4% and the SVM 98.5%, against 92.7–93.6% for the gradient-boosted and random-forest ensembles; with 10 notes the MLP leads XGBoost by more than 10 points (84.6% against 74.1%; LightGBM 63.4%). This is the reverse of the usual tabular finding and is consistent with its explanation: the UCI boundary is smooth and oblique, which axis-aligned trees can only approximate with many splits.</p>
+<figure id="fig:regimes" data-latex-placement="t">
+<img loading="lazy" src="figures/fig3_regimes.png" />
+<figcaption><b>Figure 3.</b> <strong>Where model families differ in distribution.</strong> (a) Test accuracy against the number of training notes (30 repetitions; bands: 95% CI). (b) Accuracy under additive Gaussian noise at test time (10 splits <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math> 5 draws). Smooth models are more data-efficient; tree ensembles degrade slightly less under heavy noise, but every plotted model loses 11–14 points at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\sigma=0.5</annotation></semantics></math>.</figcaption>
+</figure>
+<p>Removing the most informative feature (variance) mimics a cheaper sensor. The MLP again leads (96.8%), tree ensembles follow closely (95.5–95.9%), and the untuned SVM drops to 91.1%; with only kurtosis and entropy, all models converge to 59–72%, which indicates that performance is limited by information rather than by model class. Under test-time noise the ranking flips: at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\sigma=0.5</annotation></semantics></math> XGBoost (87.8%) and random forest (87.4%) edge out the SVM (86.4%) and MLP (86.0%), and at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>σ</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sigma=1</annotation></semantics></math> XGBoost and random forest lead the MLP and SVM by 2.5–3.3 points. The dominant effect, however, is the loss of 11–14 points for every model, which argues for investing in signal quality before model choice.</p>
+<div id="tab:e3">
+<div class="tbl"><p class="tcap"><b>Table 4.</b> E3: accuracy (%) with weaker feature sets (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">2\times10</annotation></semantics></math>-fold cross-validation). Best per column in bold.</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Family</th>
+<th>All four features</th>
+<th>Without variance</th>
+<th>Kurtosis + entropy only</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MLP (3<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>64)</td>
+<td>Deep</td>
+<td><strong>100.00</strong></td>
+<td><strong>96.83</strong></td>
+<td><strong>72.45</strong></td>
+</tr>
+<tr>
+<td>LightGBM</td>
+<td>Tree</td>
+<td>99.38</td>
+<td>95.85</td>
+<td>70.37</td>
+</tr>
+<tr>
+<td>Random forest</td>
+<td>Tree</td>
+<td>99.42</td>
+<td>95.81</td>
+<td>71.79</td>
+</tr>
+<tr>
+<td>k-NN (k = 5)</td>
+<td>Classical</td>
+<td>99.85</td>
+<td>95.81</td>
+<td>69.53</td>
+</tr>
+<tr>
+<td>XGBoost</td>
+<td>Tree</td>
+<td>99.67</td>
+<td>95.48</td>
+<td>71.54</td>
+</tr>
+<tr>
+<td>Decision tree</td>
+<td>Tree</td>
+<td>98.51</td>
+<td>93.95</td>
+<td>69.06</td>
+</tr>
+<tr>
+<td>SVM (RBF)</td>
+<td>Classical</td>
+<td><strong>100.00</strong></td>
+<td>91.11</td>
+<td>64.21</td>
+</tr>
+<tr>
+<td>Logistic regression</td>
+<td>Classical</td>
+<td>98.11</td>
+<td>80.84</td>
+<td>59.29</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<h2 data-number="5.3" id="unseen-counterfeit-families"><span class="header-section-number">5.3</span> Unseen counterfeit families</h2>
+<p>The picture changes once a family is withheld (Figure <a href="#fig:teaser" data-reference-type="ref" data-reference="fig:teaser">1</a>, Table <a href="#tab:lofo" data-reference-type="ref" data-reference="tab:lofo">5</a>, Figure <a href="#fig:lofo" data-reference-type="ref" data-reference="fig:lofo">4</a>). Under the random split, every supervised detector catches at least 98.8% of counterfeits at the 1% budget. Under LOFO, XGBoost, random forest and LightGBM catch 61.0%, 57.6% and 51.0% on average and only 29–39% of the hardest family; the MLP catches 84.4% (worst 67.8%) and the SVM 96.1% (worst 88.9%). The hardest family is family 1, the one closest to genuine notes in Figure <a href="#fig:data" data-reference-type="ref" data-reference="fig:data">2</a>b, which XGBoost detects at 39% and the MLP at 68%. One-class detectors are almost unaffected by the change of protocol: the autoencoder detects 99.98% (95% CI 99.94–100; worst family 99.9%), the Mahalanobis score 98.8% and the one-class SVM 98.3%, all at a realised genuine-rejection rate of 1.6–2.0%.</p>
+<div id="tab:lofo">
+<div class="tbl"><p class="tcap"><b>Table 5.</b> E5: counterfeit detection (%) at a 1% genuine-rejection budget (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">K=3</annotation></semantics></math> families, 10 seeds). LOFO: mean over held-out families with 95% bootstrap CI; Worst: seed-averaged minimum over families; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Δ</mi><annotation encoding="application/x-tex">\Delta</annotation></semantics></math>: LOFO minus random split (pp); GRR: realised genuine rejection on held-out genuine notes; AUC: ranking quality under LOFO.</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th>Detector</th>
+<th>Paradigm</th>
+<th>Family</th>
+<th>Random</th>
+<th>LOFO [95% CI]</th>
+<th>Worst</th>
+<th><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Δ</mi><annotation encoding="application/x-tex">\Delta</annotation></semantics></math></th>
+<th>GRR (%)</th>
+<th>AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SVM (RBF)</td>
+<td>Supervised</td>
+<td>Classical</td>
+<td>100.0</td>
+<td>96.1 [94.8, 97.4]</td>
+<td>88.9</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>−</mi><annotation encoding="application/x-tex">-</annotation></semantics></math>3.9</td>
+<td>2.1</td>
+<td>0.998</td>
+</tr>
+<tr>
+<td>MLP (3<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>64)</td>
+<td>Supervised</td>
+<td>Deep</td>
+<td>100.0</td>
+<td>84.4 [81.7, 87.1]</td>
+<td>67.8</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>−</mi><annotation encoding="application/x-tex">-</annotation></semantics></math>15.6</td>
+<td>1.4</td>
+<td>0.979</td>
+</tr>
+<tr>
+<td>Logistic regression</td>
+<td>Supervised</td>
+<td>Classical</td>
+<td>98.8</td>
+<td>76.1 [74.4, 77.6]</td>
+<td>57.9</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>−</mi><annotation encoding="application/x-tex">-</annotation></semantics></math>22.7</td>
+<td>1.6</td>
+<td>0.979</td>
+</tr>
+<tr>
+<td>XGBoost</td>
+<td>Supervised</td>
+<td>Tree</td>
+<td>99.6</td>
+<td>61.0 [58.1, 63.7]</td>
+<td>35.7</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>−</mi><annotation encoding="application/x-tex">-</annotation></semantics></math>38.6</td>
+<td>1.6</td>
+<td>0.922</td>
+</tr>
+<tr>
+<td>Random forest</td>
+<td>Supervised</td>
+<td>Tree</td>
+<td>99.8</td>
+<td>57.6 [52.7, 61.9]</td>
+<td>38.8</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>−</mi><annotation encoding="application/x-tex">-</annotation></semantics></math>42.2</td>
+<td>1.8</td>
+<td>0.906</td>
+</tr>
+<tr>
+<td>LightGBM</td>
+<td>Supervised</td>
+<td>Tree</td>
+<td>99.2</td>
+<td>51.0 [41.1, 60.4]</td>
+<td>29.3</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>−</mi><annotation encoding="application/x-tex">-</annotation></semantics></math>48.3</td>
+<td>1.7</td>
+<td>0.911</td>
+</tr>
+<tr>
+<td>Autoencoder</td>
+<td>One-class</td>
+<td>Deep</td>
+<td>100.0</td>
+<td>99.98 [99.9, 100.0]</td>
+<td>99.9</td>
+<td>0.0</td>
+<td>1.7</td>
+<td>0.9998</td>
+</tr>
+<tr>
+<td>Mahalanobis (Gaussian)</td>
+<td>One-class</td>
+<td>Classical</td>
+<td>98.3</td>
+<td>98.8 [98.2, 99.3]</td>
+<td>97.3</td>
+<td>+0.5</td>
+<td>1.6</td>
+<td>0.999</td>
+</tr>
+<tr>
+<td>One-class SVM</td>
+<td>One-class</td>
+<td>Classical</td>
+<td>97.1</td>
+<td>98.3 [96.1, 99.6]</td>
+<td>95.7</td>
+<td>+1.2</td>
+<td>2.0</td>
+<td>0.999</td>
+</tr>
+<tr>
+<td>Isolation forest</td>
+<td>One-class</td>
+<td>Tree</td>
+<td>34.3</td>
+<td>45.7 [38.3, 53.8]</td>
+<td>4.7</td>
+<td>+11.4</td>
+<td>2.2</td>
+<td>0.944</td>
+</tr>
+<tr>
+<td>MLP + Autoencoder</td>
+<td>Hybrid</td>
+<td>–</td>
+<td>100.0</td>
+<td>99.8 [99.6, 99.98]</td>
+<td>99.5</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>−</mi><annotation encoding="application/x-tex">-</annotation></semantics></math>0.2</td>
+<td>1.5</td>
+<td>–</td>
+</tr>
+<tr>
+<td>XGBoost + Autoencoder</td>
+<td>Hybrid</td>
+<td>–</td>
+<td>100.0</td>
+<td>99.8 [99.5, 99.97]</td>
+<td>99.3</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>−</mi><annotation encoding="application/x-tex">-</annotation></semantics></math>0.2</td>
+<td>1.6</td>
+<td>–</td>
+</tr>
+<tr>
+<td>MLP + Isolation forest</td>
+<td>Hybrid</td>
+<td>–</td>
+<td>100.0</td>
+<td>86.5 [83.7, 89.2]</td>
+<td>65.1</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>−</mi><annotation encoding="application/x-tex">-</annotation></semantics></math>13.5</td>
+<td>2.5</td>
+<td>–</td>
+</tr>
+<tr>
+<td>XGBoost + Isolation forest</td>
+<td>Hybrid</td>
+<td>–</td>
+<td>99.4</td>
+<td>67.9 [62.3, 73.5]</td>
+<td>35.6</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>−</mi><annotation encoding="application/x-tex">-</annotation></semantics></math>31.5</td>
+<td>2.5</td>
+<td>–</td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<p>Two further observations matter for deployment. First, the default decision threshold of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.5</mn><annotation encoding="application/x-tex">0.5</annotation></semantics></math> is worse still: random forest then detects only 23.5% of unseen-family counterfeits, XGBoost 36.4% and LightGBM 41.7%. Second, ranking metrics conceal the problem. Under LOFO the tree ensembles keep an AUC of 0.91–0.92, and the isolation forest an AUC of 0.94, yet at the 1% budget the latter detects only 45.7%. Figure <a href="#fig:lofo" data-reference-type="ref" data-reference="fig:lofo">4</a>b shows why: to detect 89.5% of unseen-family counterfeits, XGBoost must reject about 22% of genuine notes, whereas the autoencoder exceeds 99% while rejecting about 1%. Reporting detection at a fixed genuine-rejection budget is therefore not a cosmetic choice.</p>
+<figure id="fig:lofo" data-latex-placement="t">
+<img loading="lazy" src="figures/fig4_lofo.png" />
+<figcaption><b>Figure 4.</b> <strong>Unseen-family detection in detail.</strong> (a) Detection (%) of each held-out family (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">K=3</annotation></semantics></math>, 1% budget, mean over 10 seeds); columns F0–F2 give the held-out family and its number of notes, and “Worst” is the seed-averaged minimum over families. (b) Operating characteristics under LOFO: unseen-family detection against the realised genuine-rejection rate for budgets <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math> from 0.2% to 20%; open circles mark <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\alpha=1\%</annotation></semantics></math>.</figcaption>
+</figure>
+<h2 data-number="5.4" id="sec:mechanism"><span class="header-section-number">5.4</span> Why supervised detectors fail: extrapolation, not overlap</h2>
+<p>Remark <a href="#rem:extrapolation" data-reference-type="ref" data-reference="rem:extrapolation">1</a> attributes the failure to how supervised scores extrapolate. Figure <a href="#fig:toy" data-reference-type="ref" data-reference="fig:toy">5</a> illustrates the mechanism on synthetic data designed for the purpose: two known counterfeit families lie to one side of the genuine class, and two new families appear elsewhere. The supervised detectors flag whatever lies beyond the boundary they drew against the known families, so a new family is caught only by accident of geometry: XGBoost’s axis-aligned split happens to cover new family 2 (98%) but not new family 1 (0%), and the MLP misses both. The one-class detectors flag departures from the genuine class, each with its own geometry—axis-aligned boxes for the isolation forest and a band around a learned one-dimensional manifold for the autoencoder, which therefore partly misses a family lying along the manifold’s extension (72%).</p>
+<figure id="fig:toy" data-latex-placement="t">
+<img loading="lazy" src="figures/fig5_toy.png" />
+<figcaption><b>Figure 5.</b> <strong>Mechanism on synthetic data (illustration only).</strong> Shaded: region flagged at a 1% genuine-rejection budget. Supervised detectors (a, b) are trained on genuine notes and two known families (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>); one-class detectors (c, d) on genuine notes only. The text under each panel gives the share of each new family that is flagged.</figcaption>
+</figure>
+<p>The real data confirm the account (Figure <a href="#fig:mechanism" data-reference-type="ref" data-reference="fig:mechanism">6</a>). Pooling all seeds and held-out families, XGBoost accepted 2,582 of 6,100 unseen-family evaluations; 98.9% of those accepted notes lie outside the region holding 99% of genuine validation notes under the Mahalanobis score, and 99.9% exceed the autoencoder’s threshold. For the MLP the corresponding figures are 1,366 accepted notes, of which 99.9% lie outside the genuine region. The missed counterfeits are therefore not ambiguous notes inside the genuine distribution; they are clearly non-genuine notes that a supervised boundary, drawn against other families, places on the genuine side.</p>
+<figure id="fig:mechanism" data-latex-placement="t">
+<img loading="lazy" src="figures/fig6_mechanism.png" />
+<figcaption><b>Figure 6.</b> <strong>Mechanism on the real data</strong> (four features, all seeds, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">K=3</annotation></semantics></math>). Each point is one note scored by a supervised detector trained without that note’s family. Horizontal: squared Mahalanobis distance from the genuine class relative to its 99% threshold; right of 1 the note lies outside the region holding 99% of genuine validation notes (“non-genuine”), left of it the note is “genuine-like”. Vertical: the detector’s exact logit minus its 1% threshold; below 0 the note is accepted as genuine. The shaded quadrant holds counterfeits that are non-genuine yet accepted; the percentage is their share of all unseen-family evaluations.</figcaption>
+</figure>
+<p>The same lens explains the isolation forest’s weakness. Seventy-one per cent of all counterfeits, and 96.9% of family 1, lie inside the per-feature range of genuine notes; there, axis-parallel isolation cannot separate off-manifold points from the genuine class, a known artefact that motivated non-axis-aligned variants <span class="citation" data-cites="hariri2021extended">(<a href="#ref-hariri2021extended" role="doc-biblioref">Hariri et al. 2021</a>)</span>. Accordingly the isolation forest detects only 5% of family 1.</p>
+<h2 data-number="5.5" id="sec:robust"><span class="header-section-number">5.5</span> Robustness to family granularity and operating point</h2>
+<p>Because the families are statistical proxies, we repeat E5 for every <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math> from 2 to 6 (Figure <a href="#fig:k" data-reference-type="ref" data-reference="fig:k">7</a>). Coarser partitions withhold larger and more distinct families and make the task harder for supervised models; finer partitions withhold smaller families that resemble the remaining ones. Throughout, the supervised tree ensembles never exceed 78.1% mean or 42.9% worst-family detection. The MLP improves from 60.7% at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">K=2</annotation></semantics></math> to 98.1% at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">K=6</annotation></semantics></math>, and the SVM from 85.7% to 100%, but their worst-family detection at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">K=2</annotation></semantics></math> is 35.5% and 71.3%. The autoencoder stays at or above 99.9% for both mean and worst family at every <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>, and the Mahalanobis score between 94.4% and 99.0%. The isolation forest remains the weakest one-class detector (worst family 0.2–11.8%). Across budgets (Figure <a href="#fig:lofo" data-reference-type="ref" data-reference="fig:lofo">4</a>b), the autoencoder and the Mahalanobis score dominate the supervised tree ensembles at every <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math> we tested; the isolation forest overtakes the tree ensembles only once more than 5% of genuine notes are rejected.</p>
+<figure id="fig:k" data-latex-placement="t">
+<img loading="lazy" src="figures/fig7_k.png" />
+<figcaption><b>Figure 7.</b> <strong>Robustness to the granularity of counterfeit families</strong> (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>2</mn><mo>,</mo><mi>…</mi><mo>,</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">K=2,\dots,6</annotation></semantics></math>; 1% budget; band: 95% bootstrap CI over seeds). (a) Mean over held-out families. (b) Worst held-out family. Supervised tree ensembles never exceed 78.1% mean or 42.9% worst-family detection; the autoencoder stays at or above 99.9% throughout.</figcaption>
+</figure>
+<h2 data-number="5.6" id="hybrids-the-one-class-component-decides-novelty-detection"><span class="header-section-number">5.6</span> Hybrids: the one-class component decides novelty detection</h2>
+<p>The <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">2\times2</annotation></semantics></math> hybrid grid isolates the contribution of each component. Replacing the isolation forest by the autoencoder raises unseen-family detection by 31.9 points when paired with XGBoost and by 13.3 points when paired with the MLP; replacing XGBoost by the MLP adds 18.6 points when paired with the isolation forest but only 0.06 points when paired with the autoencoder (Table <a href="#tab:lofo" data-reference-type="ref" data-reference="tab:lofo">5</a>). Once the one-class component is strong, the choice of supervised component no longer matters for novelty detection. The supervised layer remains useful for a different purpose: it assigns flagged notes to known families, which supports counterfeit intelligence and forensic linkage at no cost in detection.</p>
+<h1 data-number="6" id="sec:econ"><span class="header-section-number">6</span> Economic analysis and policy implications</h1>
+<h2 data-number="6.1" id="order-of-magnitude"><span class="header-section-number">6.1</span> Order of magnitude</h2>
+<p>With incidence <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math> in ppm, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> notes in circulation and a mean counterfeit face value <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>d</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar d</annotation></semantics></math>, the annual face value of detected counterfeits is <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo>≈</mo><mi>ρ</mi><mo>⋅</mo><mfrac><mi>N</mi><msup><mn>10</mn><mn>6</mn></msup></mfrac><mo>⋅</mo><mover><mi>d</mi><mo accent="true">‾</mo></mover><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+V \approx \rho\cdot\frac{N}{10^{6}}\cdot\bar d .
+\label{eq:volume}
+\end{equation}</annotation></semantics></math> For a Thailand-scale economy we use illustrative inputs of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>6</mn><mo>×</mo><msup><mn>10</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">N=6\times10^{9}</annotation></semantics></math> notes and a GDP of THB 18 trillion; these are working assumptions, not official statistics. At <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\rho=1</annotation></semantics></math> ppm and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>d</mi><mo accent="true">‾</mo></mover><mo>=</mo></mrow><annotation encoding="application/x-tex">\bar d=</annotation></semantics></math> THB 500, Equation <a href="#eq:volume" data-reference-type="eqref" data-reference="eq:volume">[eq:volume]</a> gives about 6,000 notes and THB 3 million a year, or <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.7</mn><mo>×</mo><msup><mn>10</mn><mrow><mi>−</mi><mn>5</mn></mrow></msup><mi>%</mi></mrow><annotation encoding="application/x-tex">1.7\times10^{-5}\%</annotation></semantics></math> of GDP. Figure <a href="#fig:econ" data-reference-type="ref" data-reference="fig:econ">8</a> shows that the conclusion is insensitive to the inputs: even at Canada’s 2004 peak incidence, detected counterfeits would amount to about 0.008% of GDP.</p>
+<figure id="fig:econ" data-latex-placement="t">
+<img loading="lazy" src="figures/fig8_econ.png" />
+<figcaption><b>Figure 8.</b> <strong>Order of magnitude of counterfeiting losses</strong> for a Thailand-scale economy (illustrative inputs: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>6</mn><mo>×</mo><msup><mn>10</mn><mn>9</mn></msup></mrow><annotation encoding="application/x-tex">6\times10^{9}</annotation></semantics></math> notes in circulation, GDP of THB 18 trillion). Colour: annual face value of detected counterfeits as a share of GDP; dashed contours mark decades. The star marks a working assumption of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>∼</mo><annotation encoding="application/x-tex">\sim</annotation></semantics></math>1 ppm and a mean counterfeit value of THB 500.</figcaption>
+</figure>
+<h2 data-number="6.2" id="who-bears-the-cost"><span class="header-section-number">6.2</span> Who bears the cost</h2>
+<p>Macroeconomic insignificance does not imply that counterfeiting is harmless. The face value of a counterfeit is lost by its last holder, who is not compensated, and in cash-intensive segments that holder is often a small merchant: for a vendor with daily takings of THB 2,000, a single THB 1,000 counterfeit erases half a day’s revenue. The larger social cost runs through confidence. When merchants start refusing a denomination, as happened in Canada during its episode of high incidence, transaction costs rise across the whole cash system, and those who depend most on cash, including older and rural users, bear them disproportionately. These channels suggest judging policy by the cost per counterfeit prevented and by measures of confidence in cash, rather than by losses relative to GDP.</p>
+<h2 data-number="6.3" id="detection-versus-redesign"><span class="header-section-number">6.3</span> Detection versus redesign</h2>
+<p>Redesign and detection are complements with very different cost structures. Detection upgrades are cheap and fast, can be deployed within weeks, and work only where machines are; redesigns are expensive and slow—Japan announced its 2024 series five years before issue—but they raise the bar everywhere, including at the point of sale, through new public features. Writing <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>L</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">\Delta L_t</annotation></semantics></math> for the reduction in direct, confidence and verification losses in year <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math> for the discount rate, a redesign is worthwhile relative to the best detection alternative when <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><mi>T</mi></munderover><mfrac><mrow><mi mathvariant="normal">Δ</mi><msubsup><mi>L</mi><mi>t</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">t</mi></mrow></msubsup><mo>+</mo><mi mathvariant="normal">Δ</mi><msubsup><mi>L</mi><mi>t</mi><mrow><mi mathvariant="normal">t</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">u</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">t</mi></mrow></msubsup><mo>+</mo><mi mathvariant="normal">Δ</mi><msubsup><mi>L</mi><mi>t</mi><mrow><mi mathvariant="normal">v</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">f</mi><mi mathvariant="normal">y</mi></mrow></msubsup></mrow><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>r</mi><msup><mo stretchy="false" form="postfix">)</mo><mi>t</mi></msup></mrow></mfrac><mspace width="0.278em"></mspace><mo>&gt;</mo><mspace width="0.278em"></mspace><msub><mi>C</mi><mrow><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">s</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">n</mi></mrow></msub><mo>−</mo><msub><mi>C</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\sum_{t=1}^{T}\frac{\Delta L^{\mathrm{direct}}_t+\Delta L^{\mathrm{trust}}_t+\Delta L^{\mathrm{verify}}_t}{(1+r)^{t}} \;&gt;\; C_{\mathrm{redesign}}-C_{\mathrm{detection}} .
+\label{eq:rule}
+\end{equation}</annotation></semantics></math> Canada’s experience shows that the left-hand side can be large when incidence and confidence losses are high; Australia’s shows that even a polymer substrate eventually needs renewal. At Thailand’s low incidence, counterfeiting alone is unlikely to justify accelerating a redesign cycle, which is consistent with redesigns there being driven by series renewal and durability, such as the polymer 20-baht note <span class="citation" data-cites="bot_banknotes">(<a href="#ref-bot_banknotes" role="doc-biblioref">Bank of Thailand 2024</a>)</span>.</p>
+<h2 data-number="6.4" id="recommendations"><span class="header-section-number">6.4</span> Recommendations</h2>
+<p>Our results suggest four measures for a low-incidence central bank. <em>(i) Evaluation standard:</em> certify detectors with family-held-out tests at a fixed genuine-rejection budget and report worst-family detection, rather than accuracy on random splits. <em>(ii) Two-layer architecture:</em> pair a supervised layer, which identifies known families, with a one-class screening layer trained on genuine notes, whose flags feed counterfeit analysis. <em>(iii) Coverage:</em> direct resources to points where cash changes hands without machines, through public education on Level-1 features and certified low-cost devices. <em>(iv) Data-driven redesign triggers:</em> use detection telemetry, such as ppm by denomination and the emergence of families that pass Level-2 checks, to decide when to accelerate a redesign.</p>
+<h1 data-number="7" id="sec:discussion"><span class="header-section-number">7</span> Discussion</h1>
+<h4 data-number="7.0.0.1" id="so-trees-or-deep-networks"><span class="header-section-number">7.0.0.1</span> So, trees or deep networks?</h4>
+<p>The answer depends on the regime. In distribution on this benchmark, the two are indistinguishable; with scarce data, smooth models (MLP, SVM) learn faster; under heavy noise, tree ensembles degrade slightly less; with weaker features, all models converge. For the threat that matters most, unseen counterfeit families, the decisive choice is the framing—supervised versus one-class—and within one-class detection a neural autoencoder outperforms the tree-based isolation forest by a wide margin. Asking which model family is best, without fixing the regime and the protocol, conflates these effects.</p>
+<h4 data-number="7.0.0.2" id="why-one-class-screening-works-here-and-when-it-will-not."><span class="header-section-number">7.0.0.2</span> Why one-class screening works here, and when it will not.</h4>
+<p>Genuine notes come from a single, tightly controlled manufacturing process, whereas counterfeits come from a growing union of processes. Learning the genuine class is therefore well posed, while learning “the counterfeit class” is not. This asymmetry has limits. High-quality counterfeits that reproduce intaglio printing and Level-2 features may lie close to the genuine manifold, where any one-class detector must trade detection for genuine rejection; there, covert Level-3 features and redesign remain essential. Reconstruction-based detectors also have blind directions (Figure <a href="#fig:toy" data-reference-type="ref" data-reference="fig:toy">5</a>d), which motivates density-based and deep one-class objectives <span class="citation" data-cites="ruff2018deep">(<a href="#ref-ruff2018deep" role="doc-biblioref">Ruff et al. 2018</a>)</span> and, for images, patch-level methods <span class="citation" data-cites="roth2022towards">(<a href="#ref-roth2022towards" role="doc-biblioref">Roth et al. 2022</a>)</span>.</p>
+<h4 data-number="7.0.0.3" id="threats-to-validity."><span class="header-section-number">7.0.0.3</span> Threats to validity.</h4>
+<p><em>Construct validity:</em> the UCI specimens are “banknote-like” samples from one imaging set-up, described by four features without infrared, ultraviolet or magnetic information, and our families are clusters rather than documented production processes. The robustness analysis over <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math> mitigates, but cannot remove, this concern. If the label mapping were reversed, the one-class results would describe a different experiment. <em>Internal validity:</em> hyperparameters are untuned; tuning could change the ranking of the SVM in E3, although it cannot remove the extrapolation property in Remark <a href="#rem:extrapolation" data-reference-type="ref" data-reference="rem:extrapolation">1</a>. With about 150 genuine validation notes, realised genuine rejection averaged 1.8% against a 1% target. <em>External validity:</em> “deep” here means small multilayer networks; convolutional and transformer models on raw multispectral images may behave differently, which is a hypothesis of the study proposed below.</p>
+<h4 data-number="7.0.0.4" id="ethics-and-dual-use."><span class="header-section-number">7.0.0.4</span> Ethics and dual use.</h4>
+<p>Detailed knowledge of which detectors miss which counterfeits could help counterfeiters. We therefore report results on a public benchmark, describe security features only at the level published by issuers, and recommend that studies on real currencies keep raw data under central-bank control, test adversarial robustness only in simulation, and withhold vendor-specific weaknesses. Producing or possessing counterfeit currency is a serious offence in most jurisdictions, including Thailand; data collection must take place under the supervision of the issuing authority.</p>
+<h1 data-number="8" id="sec:agenda"><span class="header-section-number">8</span> A research agenda for Thai banknotes</h1>
+<p>We pre-specify a 24-month study with the Bank of Thailand (Figure <a href="#fig:roadmap" data-reference-type="ref" data-reference="fig:roadmap">9</a>). Its data would combine visible, infrared and ultraviolet images and magnetic signals from at least two models of counting machine, genuine notes in a range of conditions, and seized counterfeits labelled by family by document examiners, together with official incidence statistics and a merchant survey. We state five hypotheses:</p>
+<ol>
+<li><p>On real Thai banknote data, random-split evaluation overstates unseen-family detection relative to LOFO.</p></li>
+<li><p>A two-layer detector detects more unseen-family counterfeits than a supervised detector at the same genuine-rejection budget.</p></li>
+<li><p>On engineered features, gradient boosting performs no worse than deep networks; on raw multispectral images, convolutional or transformer models perform better.</p></li>
+<li><p>The polymer 20-baht note reduced incidence in its denomination relative to other denominations (difference-in-differences).</p></li>
+<li><p>At current incidence, the total cost of counterfeiting in Thailand is several times lower than the cost of an accelerated redesign.</p></li>
+</ol>
+<p>If access to seized counterfeits is not granted (Gate A), the study falls back to a one-class track that needs genuine notes only and to an economic track based on published statistics.</p>
+<figure id="fig:roadmap" data-latex-placement="t">
+<img loading="lazy" src="figures/fig9_roadmap.png" />
+<figcaption><b>Figure 9.</b> <strong>Proposed 24-month research plan.</strong> Modelling depends on Gate A, access to seized counterfeits under central-bank supervision.</figcaption>
+</figure>
+<h1 data-number="9" id="conclusion"><span class="header-section-number">9</span> Conclusion</h1>
+<p>Near-perfect accuracy on random splits says little about the ability of a counterfeit detector to catch the counterfeits that matter, those it has never seen. Under a leave-one-family-out protocol at a fixed genuine-rejection budget, supervised tree ensembles that score above 99% on the standard benchmark detect only about half of unseen-family counterfeits, and the failure follows from how supervised scores extrapolate. A one-class detector trained on genuine notes alone closes the gap. For central banks in low-incidence economies, where counterfeiting is macroeconomically negligible but locally painful, this shifts attention from marginal accuracy to evaluation standards, novelty screening and coverage at the points where cash changes hands without machines. Whether these conclusions survive on multispectral images of real currency is the question our proposed study is designed to answer.</p>
+<h1 class="unnumbered" id="data-and-code-availability">Data and code availability</h1>
+<p>The UCI Banknote Authentication data are publicly available. The code that regenerates every number, table and figure in this paper accompanies it as supplementary material (<code>banknote_experiments.py</code>, <code>paper_analysis.py</code>, <code>make_figures.py</code>).</p>
+<h1 class="unnumbered" id="acknowledgements">Acknowledgements</h1>
+<p>Experiments and drafting were assisted by an AI system (Claude, Anthropic). The author takes full responsibility for the content.</p>
+<h1 data-number="A" id="app:hyper"><span class="header-section-number">A</span> Hyperparameters</h1>
+<div id="tab:hyper">
+<div class="tbl"><p class="tcap"><b>Table 6.</b> Detector configurations, fixed before evaluation. “Std.” denotes feature standardisation fitted on training data.</p><div class="tscroll"><table>
+<thead>
+<tr>
+<th>Detector</th>
+<th>Implementation</th>
+<th>Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logistic regression</td>
+<td>scikit-learn</td>
+<td>L2 penalty, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">C=1</annotation></semantics></math>; std.</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>-NN</td>
+<td>scikit-learn</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">k=5</annotation></semantics></math>, Euclidean; std.</td>
+</tr>
+<tr>
+<td>SVM (RBF)</td>
+<td>scikit-learn</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo>=</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">C=10</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>γ</mi><mo>=</mo></mrow><annotation encoding="application/x-tex">\gamma=</annotation></semantics></math> scale; decision function as score; std.</td>
+</tr>
+<tr>
+<td>Decision tree</td>
+<td>scikit-learn</td>
+<td>Unpruned</td>
+</tr>
+<tr>
+<td>Random forest</td>
+<td>scikit-learn</td>
+<td>300 trees</td>
+</tr>
+<tr>
+<td>Extra trees</td>
+<td>scikit-learn</td>
+<td>300 trees</td>
+</tr>
+<tr>
+<td>HistGradientBoosting</td>
+<td>scikit-learn</td>
+<td>Library defaults</td>
+</tr>
+<tr>
+<td>XGBoost</td>
+<td>xgboost 3.4</td>
+<td>300 trees, depth 4, learning rate 0.1, subsample 0.9</td>
+</tr>
+<tr>
+<td>LightGBM</td>
+<td>lightgbm 4.7</td>
+<td>300 trees, learning rate 0.05, 15 leaves, minimum 5 samples per leaf</td>
+</tr>
+<tr>
+<td>MLP (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>64</mn></mrow><annotation encoding="application/x-tex">3\times64</annotation></semantics></math>)</td>
+<td>scikit-learn</td>
+<td>ReLU, Adam, L2 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mrow><mi>−</mi><mn>4</mn></mrow></msup><annotation encoding="application/x-tex">10^{-4}</annotation></semantics></math>, up to 1,000 epochs, stop after 20 epochs without improvement of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mrow><mi>−</mi><mn>5</mn></mrow></msup><annotation encoding="application/x-tex">10^{-5}</annotation></semantics></math>; std.</td>
+</tr>
+<tr>
+<td>Isolation forest</td>
+<td>scikit-learn</td>
+<td>300 trees; score <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mi>−</mi></mrow><annotation encoding="application/x-tex">=-</annotation></semantics></math> anomaly score</td>
+</tr>
+<tr>
+<td>One-class SVM</td>
+<td>scikit-learn</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ν</mi><mo>=</mo><mn>0.05</mn></mrow><annotation encoding="application/x-tex">\nu=0.05</annotation></semantics></math>, RBF, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>γ</mi><mo>=</mo></mrow><annotation encoding="application/x-tex">\gamma=</annotation></semantics></math> scale; std.</td>
+</tr>
+<tr>
+<td>Autoencoder</td>
+<td>scikit-learn</td>
+<td>4–32–2–32–4, tanh, Adam, L2 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mrow><mi>−</mi><mn>4</mn></mrow></msup><annotation encoding="application/x-tex">10^{-4}</annotation></semantics></math>, up to 3,000 epochs; score <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>=</mo><annotation encoding="application/x-tex">=</annotation></semantics></math> mean squared reconstruction error; std.</td>
+</tr>
+<tr>
+<td>Mahalanobis</td>
+<td>scikit-learn</td>
+<td>Empirical covariance of genuine training notes; score <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>=</mo><annotation encoding="application/x-tex">=</annotation></semantics></math> squared Mahalanobis distance</td>
+</tr>
+<tr>
+<td>Hybrids</td>
+<td>–</td>
+<td>Flag if either component exceeds its threshold at budget <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\alpha/2</annotation></semantics></math></td>
+</tr>
+</tbody>
+</table></div></div>
+</div>
+<h1 data-number="B" id="app:toy"><span class="header-section-number">B</span> Synthetic illustration</h1>
+<p>Figure <a href="#fig:toy" data-reference-type="ref" data-reference="fig:toy">5</a> uses 700 genuine points from a bivariate normal distribution with unit variances and correlation 0.78, scaled by 0.55 (450 for training, 250 for threshold calibration), two known families of 160 points each centred at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>2.6</mn><mo>,</mo><mi>−</mi><mn>0.4</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(2.6,-0.4)</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1.0</mn><mo>,</mo><mi>−</mi><mn>2.4</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(1.0,-2.4)</annotation></semantics></math>, and two new families of 120 points each centred at <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1.9</mn><mo>,</mo><mn>2.0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(-1.9,2.0)</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>2.9</mn><mo>,</mo><mi>−</mi><mn>2.9</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(-2.9,-2.9)</annotation></semantics></math> with isotropic spread. Models and thresholds follow Appendix <a href="#app:hyper" data-reference-type="ref" data-reference="app:hyper">A</a>, except that the two-dimensional autoencoder uses a one-unit bottleneck, since a two-unit code could learn the identity.</p>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-boc_counterfeit" class="csl-entry" role="listitem">
+Bank of Canada. 2024. <em>Counterfeiting Statistics and the Bank Note Counterfeit-Deterrence Strategy</em>. Public information.
+</div>
+<div id="ref-boe_counterfeit" class="csl-entry" role="listitem">
+Bank of England. 2024. <em>Counterfeit Banknotes: Statistics and Polymer Series</em>. Public information.
+</div>
+<div id="ref-bot_banknotes" class="csl-entry" role="listitem">
+Bank of Thailand. 2024. <em>Banknote Statistics, Series 17 Banknotes and the Polymer 20-Baht Note</em>. Public information and annual reports.
+</div>
+<div id="ref-fed_currency" class="csl-entry" role="listitem">
+Board of Governors of the Federal Reserve System. 2024. <em><span>U.S.</span> Currency Education Program: Counterfeit Deterrence</em>. Public information.
+</div>
+<div id="ref-bouckaert2004evaluating" class="csl-entry" role="listitem">
+Bouckaert, Remco R., and Eibe Frank. 2004. <span>“Evaluating the Replicability of Significance Tests for Comparing Learning Algorithms.”</span> <em>Advances in Knowledge Discovery and Data Mining (PAKDD)</em>, 3–12.
+</div>
+<div id="ref-breiman2001random" class="csl-entry" role="listitem">
+Breiman, Leo. 2001. <span>“Random Forests.”</span> <em>Machine Learning</em> 45 (1): 5–32.
+</div>
+<div id="ref-chant2004counterfeiting" class="csl-entry" role="listitem">
+Chant, John. 2004. <em>Counterfeiting: A <span>C</span>anadian Perspective</em>. Working Paper Nos. 2004-33. Bank of Canada.
+</div>
+<div id="ref-chen2016xgboost" class="csl-entry" role="listitem">
+Chen, Tianqi, and Carlos Guestrin. 2016. <span>“<span>XGBoost</span>: A Scalable Tree Boosting System.”</span> <em>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>, 785–94.
+</div>
+<div id="ref-demsar2006statistical" class="csl-entry" role="listitem">
+Demšar, Janez. 2006. <span>“Statistical Comparisons of Classifiers over Multiple Data Sets.”</span> <em>Journal of Machine Learning Research</em> 7: 1–30.
+</div>
+<div id="ref-efron1994introduction" class="csl-entry" role="listitem">
+Efron, Bradley, and Robert J. Tibshirani. 1994. <em>An Introduction to the Bootstrap</em>. Chapman &amp; Hall/CRC.
+</div>
+<div id="ref-ecb_stats" class="csl-entry" role="listitem">
+European Central Bank. 2019--2025. <em>Biannual Information on Euro Banknote Counterfeiting</em>. Press release series.
+</div>
+<div id="ref-ecb2010decision" class="csl-entry" role="listitem">
+European Central Bank. 2010. <em>Decision <span>ECB/2010/14</span> of 16 September 2010 on the Authenticity and Fitness Checking and Recirculation of Euro Banknotes</em>. Official Journal of the European Union, L 267.
+</div>
+<div id="ref-fung2011modelling" class="csl-entry" role="listitem">
+Fung, Ben S. C., and Enchuan Shao. 2011. <span>“Modelling the Counterfeiting of Bank Notes: A Literature Review.”</span> <em>Bank of Canada Review</em> Autumn: 29–35.
+</div>
+<div id="ref-geurts2006extremely" class="csl-entry" role="listitem">
+Geurts, Pierre, Damien Ernst, and Louis Wehenkel. 2006. <span>“Extremely Randomized Trees.”</span> <em>Machine Learning</em> 63 (1): 3–42.
+</div>
+<div id="ref-grinsztajn2022tree" class="csl-entry" role="listitem">
+Grinsztajn, Léo, Edouard Oyallon, and Gaël Varoquaux. 2022. <span>“Why Do Tree-Based Models Still Outperform Deep Learning on Typical Tabular Data?”</span> <em>Advances in Neural Information Processing Systems 35, Datasets and Benchmarks Track</em>.
+</div>
+<div id="ref-gulrajani2021search" class="csl-entry" role="listitem">
+Gulrajani, Ishaan, and David Lopez-Paz. 2021. <span>“In Search of Lost Domain Generalization.”</span> <em>International Conference on Learning Representations</em>.
+</div>
+<div id="ref-hariri2021extended" class="csl-entry" role="listitem">
+Hariri, Sahand, Matias Carrasco Kind, and Robert J. Brunner. 2021. <span>“Extended Isolation Forest.”</span> <em>IEEE Transactions on Knowledge and Data Engineering</em> 33 (4): 1479–89.
+</div>
+<div id="ref-hendrycks2017baseline" class="csl-entry" role="listitem">
+Hendrycks, Dan, and Kevin Gimpel. 2017. <span>“A Baseline for Detecting Misclassified and Out-of-Distribution Examples in Neural Networks.”</span> <em>International Conference on Learning Representations</em>.
+</div>
+<div id="ref-hinton2006reducing" class="csl-entry" role="listitem">
+Hinton, Geoffrey E., and Ruslan R. Salakhutdinov. 2006. <span>“Reducing the Dimensionality of Data with Neural Networks.”</span> <em>Science</em> 313 (5786): 504–7.
+</div>
+<div id="ref-hollmann2025tabpfn" class="csl-entry" role="listitem">
+Hollmann, Noah, Samuel Müller, Lennart Purucker, et al. 2025. <span>“Accurate Predictions on Small Data with a Tabular Foundation Model.”</span> <em>Nature</em> 637: 319–26.
+</div>
+<div id="ref-judson2003estimating" class="csl-entry" role="listitem">
+Judson, Ruth A., and Richard D. Porter. 2003. <em>Estimating the Worldwide Volume of Counterfeit <span>U.S.</span> Currency: Data and Extrapolation</em>. Finance and Economics Discussion Series Nos. 2003-52. Board of Governors of the Federal Reserve System.
+</div>
+<div id="ref-kapoor2023leakage" class="csl-entry" role="listitem">
+Kapoor, Sayash, and Arvind Narayanan. 2023. <span>“Leakage and the Reproducibility Crisis in Machine-Learning-Based Science.”</span> <em>Patterns</em> 4 (9): 100804.
+</div>
+<div id="ref-ke2017lightgbm" class="csl-entry" role="listitem">
+Ke, Guolin, Qi Meng, Thomas Finley, et al. 2017. <span>“<span>LightGBM</span>: A Highly Efficient Gradient Boosting Decision Tree.”</span> <em>Advances in Neural Information Processing Systems 30</em>.
+</div>
+<div id="ref-kingma2015adam" class="csl-entry" role="listitem">
+Kingma, Diederik P., and Jimmy Ba. 2015. <span>“Adam: A Method for Stochastic Optimization.”</span> <em>International Conference on Learning Representations</em>.
+</div>
+<div id="ref-lee2017survey" class="csl-entry" role="listitem">
+Lee, Ji Woo, Hyung Gil Hong, Ki Wan Kim, and Kang Ryoung Park. 2017. <span>“A Survey on Banknote Recognition Methods by Various Sensors.”</span> <em>Sensors</em> 17 (2): 313.
+</div>
+<div id="ref-liu2008isolation" class="csl-entry" role="listitem">
+Liu, Fei Tony, Kai Ming Ting, and Zhi-Hua Zhou. 2008. <span>“Isolation Forest.”</span> <em>Proceedings of the 8th IEEE International Conference on Data Mining</em>, 413–22.
+</div>
+<div id="ref-uci_banknote" class="csl-entry" role="listitem">
+Lohweg, Volker. 2013. <em>Banknote Authentication</em>. UCI Machine Learning Repository.
+</div>
+<div id="ref-lohweg2013banknote" class="csl-entry" role="listitem">
+Lohweg, Volker, Jan Leif Hoffmann, Helene Dörksen, et al. 2013. <span>“Banknote Authentication with Mobile Devices.”</span> <em>Media Watermarking, Security, and Forensics 2013</em>, Proceedings of SPIE, vol. 8665.
+</div>
+<div id="ref-mahalanobis1936generalized" class="csl-entry" role="listitem">
+Mahalanobis, Prasanta Chandra. 1936. <span>“On the Generalized Distance in Statistics.”</span> <em>Proceedings of the National Institute of Sciences of India</em> 2 (1): 49–55.
+</div>
+<div id="ref-nadeau2003inference" class="csl-entry" role="listitem">
+Nadeau, Claude, and Yoshua Bengio. 2003. <span>“Inference for the Generalization Error.”</span> <em>Machine Learning</em> 52 (3): 239–81.
+</div>
+<div id="ref-nosal2007model" class="csl-entry" role="listitem">
+Nosal, Ed, and Neil Wallace. 2007. <span>“A Model of (the Threat of) Counterfeiting.”</span> <em>Journal of Monetary Economics</em> 54 (4): 994–1001.
+</div>
+<div id="ref-pang2021deep" class="csl-entry" role="listitem">
+Pang, Guansong, Chunhua Shen, Longbing Cao, and Anton van den Hengel. 2021. <span>“Deep Learning for Anomaly Detection: A Review.”</span> <em>ACM Computing Surveys</em> 54 (2): 1–38.
+</div>
+<div id="ref-pedregosa2011scikit" class="csl-entry" role="listitem">
+<span class="nocase">Pedregosa, Fabian et al.</span> 2011. <span>“Scikit-Learn: Machine Learning in <span>P</span>ython.”</span> <em>Journal of Machine Learning Research</em> 12: 2825–30.
+</div>
+<div id="ref-pham2020fake" class="csl-entry" role="listitem">
+Pham, Tuyen Danh, Chanhum Park, Dat Tien Nguyen, Ganbayar Batchuluun, and Kang Ryoung Park. 2020. <span>“Deep Learning-Based Fake-Banknote Detection for the Visually Impaired People Using Visible-Light Images Captured by Smartphone Cameras.”</span> <em>IEEE Access</em> 8.
+</div>
+<div id="ref-quercioli2015economics" class="csl-entry" role="listitem">
+Quercioli, Elena, and Lones Smith. 2015. <span>“The Economics of Counterfeiting.”</span> <em>Econometrica</em> 83 (3): 1211–36.
+</div>
+<div id="ref-rba_counterfeit" class="csl-entry" role="listitem">
+Reserve Bank of Australia. 2020. <em>Banknote Counterfeiting in <span>A</span>ustralia and the Next Generation Banknote Program</em>. Bulletin articles and public information.
+</div>
+<div id="ref-roth2022towards" class="csl-entry" role="listitem">
+Roth, Karsten, Latha Pemula, Joaquin Zepeda, Bernhard Schölkopf, Thomas Brox, and Peter Gehler. 2022. <span>“Towards Total Recall in Industrial Anomaly Detection.”</span> <em>Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</em>, 14318–28.
+</div>
+<div id="ref-rousseeuw1987silhouettes" class="csl-entry" role="listitem">
+Rousseeuw, Peter J. 1987. <span>“Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis.”</span> <em>Journal of Computational and Applied Mathematics</em> 20: 53–65.
+</div>
+<div id="ref-ruff2018deep" class="csl-entry" role="listitem">
+Ruff, Lukas, Robert Vandermeulen, Nico Goernitz, et al. 2018. <span>“Deep One-Class Classification.”</span> <em>Proceedings of the 35th International Conference on Machine Learning</em>, 4393–402.
+</div>
+<div id="ref-scheirer2013toward" class="csl-entry" role="listitem">
+Scheirer, Walter J., Anderson de Rezende Rocha, Archana Sapkota, and Terrance E. Boult. 2013. <span>“Toward Open Set Recognition.”</span> <em>IEEE Transactions on Pattern Analysis and Machine Intelligence</em> 35 (7): 1757–72.
+</div>
+<div id="ref-scholkopf2001estimating" class="csl-entry" role="listitem">
+Schölkopf, Bernhard, John C. Platt, John Shawe-Taylor, Alex J. Smola, and Robert C. Williamson. 2001. <span>“Estimating the Support of a High-Dimensional Distribution.”</span> <em>Neural Computation</em> 13 (7): 1443–71.
+</div>
+<div id="ref-shwartzziv2022tabular" class="csl-entry" role="listitem">
+Shwartz-Ziv, Ravid, and Amitai Armon. 2022. <span>“Tabular Data: Deep Learning Is Not All You Need.”</span> <em>Information Fusion</em> 81: 84–90.
+</div>
+<div id="ref-vaze2022openset" class="csl-entry" role="listitem">
+Vaze, Sagar, Kai Han, Andrea Vedaldi, and Andrew Zisserman. 2022. <span>“Open-Set Recognition: A Good Closed-Set Classifier Is All You Need.”</span> <em>International Conference on Learning Representations</em>.
+</div>
+</div>
+</article>
+<section class="cite" aria-label="How to cite"><h2>How to cite</h2><pre><code>@misc{chongmankhong2026beyond,
+  author = {Chongmankhong, Thanatchon},
+  title  = {Beyond 99\%: Open-Set Evaluation Reveals Silent Failures of Counterfeit Banknote Detectors, and the Case for One-Class Screening},
+  year   = {2026},
+  note   = {Preprint},
+  url    = {https://thanatchon36.github.io/beyond99-banknote-detection/paper/}
+}</code></pre></section>
+<footer class="colophon">
+<p>Rendered from <code>paper/paper.tex</code> by <code>scripts/paper_web.py</code> (<code>make web</code>). Tables are the same generated rows as the PDF, and the results strip is computed from <code>code/results/</code>. The PDF is authoritative.</p>
+</footer>
+</div>
+</body>
+</html>
