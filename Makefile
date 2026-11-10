@@ -1,7 +1,7 @@
 PY ?= $(CURDIR)/.venv/bin/python
 K ?= 2 3 4 5 6
 
-.PHONY: setup data experiments lofo quadrant figures models paper web banner poster arxiv hf test all clean
+.PHONY: setup data experiments lofo quadrant figures models paper web banner poster arxiv hf hf-models test all clean
 
 setup:          ## create venv and install the dependencies (needs uv)
 	uv venv .venv --python 3.12
@@ -44,10 +44,13 @@ arxiv:          ## arXiv source bundle -> paper/arxiv.tar.gz
 hf:             ## Hugging Face dataset bundle -> hf/ (upload: hf upload thanatchon36/beyond99-banknote-detection hf . --repo-type dataset)
 	$(PY) scripts/hf_dataset.py
 
+hf-models:      ## Hugging Face model bundle -> hf_models/ (upload: hf upload thanatchon36/beyond99-banknote-detection hf_models . --repo-type model)
+	$(PY) scripts/hf_models.py
+
 test:
 	$(PY) -m pytest -q
 
 all: data experiments lofo quadrant figures paper
 
 clean:
-	rm -rf code/models hf paper/arxiv.tar.gz paper/*.aux paper/*.log paper/*.out paper/*.blg paper/*.fls paper/*.fdb_latexmk
+	rm -rf code/models hf hf_models paper/arxiv.tar.gz paper/*.aux paper/*.log paper/*.out paper/*.blg paper/*.fls paper/*.fdb_latexmk

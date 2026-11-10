@@ -228,6 +228,7 @@ def build(out_dir: Path = OUT) -> Path:
         '<li><a href="paper.pdf">Download PDF</a></li>'
         f'<li><a href="{REPO_URL}">Code and replication</a></li>'
         f'<li><a href="{DATA_URL}">Data (Hugging Face)</a></li>'
+        f'<li><a href="https://huggingface.co/thanatchon36/beyond99-banknote-detection">Models (Hugging Face)</a></li>'
         f'<li><a href="https://doi.org/{CONCEPT_DOI}">Zenodo archive</a></li>'
     )
     title = html.unescape(re.sub(r"<[^>]+>", "", re.search(r"<h1>(.*?)</h1>", page, re.DOTALL).group(1)))

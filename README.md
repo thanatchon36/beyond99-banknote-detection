@@ -9,6 +9,7 @@
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-ffe8a3?style=flat-square&labelColor=0b1020" alt="License MIT"></a>
 <a href="https://zenodo.org/badge/latestdoi/1450040425"><img src="https://zenodo.org/badge/1450040425.svg" alt="DOI"></a>
 <a href="https://huggingface.co/datasets/thanatchon36/beyond99-banknote-detection"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20dataset-beyond99-f5a623?style=flat-square&labelColor=0b1020" alt="Hugging Face dataset"></a>
+<a href="https://huggingface.co/thanatchon36/beyond99-banknote-detection"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20models-18%20detectors-f5a623?style=flat-square&labelColor=0b1020" alt="Hugging Face models"></a>
 </p>
 
 <p align="center">
@@ -17,6 +18,7 @@
 📊 <b><a href="code/results/">Results</a></b> ·
 🗂️ <b><a href="https://archive.ics.uci.edu/dataset/267">Data</a></b> ·
 🤗 <b><a href="https://huggingface.co/datasets/thanatchon36/beyond99-banknote-detection">Dataset</a></b> ·
+🧠 <b><a href="https://huggingface.co/thanatchon36/beyond99-banknote-detection">Models</a></b> ·
 📝 <b><a href="CITATION.cff">Citation</a></b>
 </p>
 
@@ -70,6 +72,7 @@ Without `uv` or `make`: `pip install -r requirements.txt` and `./reproduce.sh` r
 | `poster` | LinkedIn poster → `docs/assets/linkedin_poster.png` |
 | `arxiv` | arXiv source bundle → `paper/arxiv.tar.gz` |
 | `hf` | Hugging Face dataset bundle → `hf/` (data, family assignments, every result file, card, checksums) |
+| `hf-models` | Hugging Face model bundle → `hf_models/` (the 18 detectors, the modules they need, pinned requirements, card) |
 
 ## Results at a glance
 
@@ -108,6 +111,9 @@ All 18 detectors, with confidence intervals, are in Table 5 of the paper and in 
    and annotations on data before saving it), the PDF, the web reader and 18 ready-to-use detectors.
 
 ## Train and use the detectors
+
+The 18 calibrated detectors are on Hugging Face, [`thanatchon36/beyond99-banknote-detection`](https://huggingface.co/thanatchon36/beyond99-banknote-detection), with a card
+that lists each one's results in the paper; or train them locally in seconds.
 
 `train_all.py` trains all 18 detectors (10 supervised, 4 one-class, 4 hybrids) on the full data, calibrates each
 threshold on held-out genuine notes, and saves ready-to-use bundles.
@@ -183,6 +189,7 @@ scripts/
   make_banner.py            README banner from the data
   make_poster.py            LinkedIn poster from the results
   hf_dataset.py             Hugging Face dataset bundle (card: hf_README.md)
+  hf_models.py              Hugging Face model bundle (card: hf_model_README.md)
 tests/                      data, detectors, README numbers, figures and tables
 Makefile, pyproject.toml    one target per step; dependencies
 reproduce.sh                the same steps without make

@@ -7,10 +7,17 @@ All notable changes to this project are documented here. The format follows
 ## [Unreleased]
 
 ### Added
+- The 18 calibrated detectors on Hugging Face, [`thanatchon36/beyond99-banknote-detection`](https://huggingface.co/thanatchon36/beyond99-banknote-detection), with the
+  modules the bundles need, pinned requirements, checksums and a card listing each detector's results in the paper;
+  built by `make hf-models`.
 - Zenodo DOI [10.5281/zenodo.24049790](https://doi.org/10.5281/zenodo.24049790) (all versions; v0.1.0 is 10.5281/zenodo.24049791) in the README
   badge, `CITATION.cff`, the web reader and the Hugging Face dataset card.
 - LinkedIn launch poster, `docs/assets/linkedin_poster.png` (1440 × 1800), drawn from `code/results/` by
   `make poster`.
+
+### Known issues
+- The saved `decision_tree` bundle flags no note: its scores are 0 or 1, the calibrated threshold is 1.0 and
+  `train_all.predict` uses `score > threshold`. The paper's evaluation is not affected.
 
 ## [0.1.0] - 2026-11-08
 

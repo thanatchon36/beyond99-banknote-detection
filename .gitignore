@@ -27,3 +27,4 @@ Thumbs.db
 paper/arxiv.tar.gz
 hf/
 .cache/
+hf_models/

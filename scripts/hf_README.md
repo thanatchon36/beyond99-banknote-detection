@@ -40,7 +40,8 @@ Banknote Detectors, and the Case for One-Class Screening* by Thanatchon Chongman
 The paper evaluates counterfeit detectors on **counterfeit families they have never seen**, at a **fixed 1%
 genuine-rejection budget**. Under that protocol, tree ensembles that score above 99% on random splits catch
 51–61% of unseen-family counterfeits, while a one-class autoencoder trained on genuine notes alone catches
-99.98%. Code: <https://github.com/thanatchon36/beyond99-banknote-detection>;
+99.98%. Code: <https://github.com/thanatchon36/beyond99-banknote-detection>; trained detectors:
+[`thanatchon36/beyond99-banknote-detection`](https://huggingface.co/thanatchon36/beyond99-banknote-detection);
 archived on Zenodo: [10.5281/zenodo.24049790](https://doi.org/10.5281/zenodo.24049790).
 
 *Independent personal research. Does not represent the views of any employer or institution.*
